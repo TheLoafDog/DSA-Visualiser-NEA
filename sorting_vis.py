@@ -86,11 +86,11 @@ class parentFrame(ctk.CTkFrame):
     def on_select(self, selected_value):
         # Create the new frame first
         if selected_value == "Bubble Sort":
-            new_frame = bubbleFrame(master=self.master, speed_var=self.speed_var, message_box=self.message_box, vis_num=self.vis_num)
+            new_frame = bubbleFrame(master=self.master, speed_var=self.speed_var, message_box=self.message_box, vis_num=self.vis_num, control_frame=self.control_frame)
         elif selected_value == "Insertion Sort":
-            new_frame = insertionFrame(master=self.master, speed_var=self.speed_var, message_box=self.message_box, vis_num=self.vis_num)
+            new_frame = insertionFrame(master=self.master, speed_var=self.speed_var, message_box=self.message_box, vis_num=self.vis_num, control_frame=self.control_frame)
         else:
-            new_frame = mergeFrame(master=self.master, speed_var=self.speed_var, message_box=self.message_box, vis_num=self.vis_num)
+            new_frame = mergeFrame(master=self.master, speed_var=self.speed_var, message_box=self.message_box, vis_num=self.vis_num, control_frame=self.control_frame)
 
         new_frame.select_sort_type.set(selected_value) # Show the selected option in the option menu
         self.message_box.title_label.configure(text=f"{selected_value} Log")
@@ -642,8 +642,8 @@ class messageFrame(ctk.CTkFrame):
         self.message_box.configure(text=text)
         
 def main(master, window):
-    window.geometry("1500x1080")
-    window.minsize(1500,1080)
+    window.geometry("1500x1200")
+    window.minsize(1500,1200)
     master.configure(fg_color='gray')
 
     master.grid_rowconfigure(0, weight=1)
