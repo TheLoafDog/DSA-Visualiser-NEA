@@ -384,6 +384,9 @@ class QuizPage(ctk.CTkFrame):
     def finish_question(self, state):
         # Pause the time
         self.timer.stop_timer()
+
+        # Deactivate the next button so the score total cannot be incremented multiple times.
+        self.next_button.configure(state="disabled")
         
         for i in range(0,4):
             self.radio_buttons[i].configure(state="disabled") # Deactivate the radio buttons
