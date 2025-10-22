@@ -217,17 +217,22 @@ class parentFrame(ctk.CTkFrame):
         else:
             self.stop_button.configure(text="↺", command=lambda: self.restart_visualiser())
             
-    def restart_visualiser(self):
+    def restart_visualiser(self, play=True):
         self.stop_button.configure(command=self.toggle_pause) # Reset command for stop button
         
         # Establish variables for the start of the animation
         self.animation_index = 0
-        self.sort_active = True
+
+        if play: 
+            self.sort_active = True
             
-        # Run methods to start the actual animation
-        self.set_slider_attributes()
+            # Run methods to start the actual animation
+            self.set_slider_attributes()
         
-        self.run_animation()
+            self.run_animation()
+        else:
+            self.playback_slider.set(0)
+            self.adjust_canvas()
         
     def change_slider_value(self, mode):
         if mode == "increment" and self.animation_index < len(self.states)-1:
@@ -449,8 +454,8 @@ class mergeFrame(parentFrame):
         self.merge_sort(self.data, 0, len(self.data) - 1)
         
         # Colour the final sorted array green
-        color_array = ['green'] * len(self.data)
-        self.states[self.state_index] = [copy.deepcopy(self.data), color_array, "Data has been sorted with merge sort."]
+        colour_array = ['green'] * len(self.data)
+        self.states[self.state_index] = [copy.deepcopy(self.data), colour_array, "Data has been sorted with merge sort."]
         self.state_index += 1
         
         # Establish variables for the start of the animation
@@ -466,17 +471,17 @@ class mergeFrame(parentFrame):
             mid = (left + right) // 2
             
             # Visualise the splitting phase
-            color_array = ['red'] * len(arr)
+            colour_array = ['red'] * len(arr)
             
             # Highlight the current subarray being split
             for i in range(left, right + 1):
-                color_array[i] = 'blue'
+                colour_array[i] = 'blue'
             
             text = f"Splitting array [{left}:{right}]: {arr[left:right+1]}\n"
             text += f"Into left half [{left}:{mid}]: {arr[left:mid+1]}\n"
             text += f"And right half [{mid+1}:{right}]: {arr[mid+1:right+1]}"
             
-            self.states[self.state_index] = [copy.deepcopy(arr), copy.deepcopy(color_array), text]
+            self.states[self.state_index] = [copy.deepcopy(arr), copy.deepcopy(colour_array), text]
             self.state_index += 1
             
             # Recursively sort the first and second halves
@@ -484,17 +489,17 @@ class mergeFrame(parentFrame):
             self.merge_sort(arr, mid + 1, right)
             
             # Visualise before merging
-            color_array = ['red'] * len(arr)
+            colour_array = ['red'] * len(arr)
             for i in range(left, mid + 1):
-                color_array[i] = 'purple'  # Left subarray
+                colour_array[i] = 'purple'  # Left subarray
             for i in range(mid + 1, right + 1):
-                color_array[i] = 'cyan'    # Right subarray
+                colour_array[i] = 'cyan'    # Right subarray
                 
             text = f"About to merge two sorted subarrays:\n"
             text += f"Left subarray [{left}:{mid}]: {arr[left:mid+1]}\n"
             text += f"Right subarray [{mid+1}:{right}]: {arr[mid+1:right+1]}"
             
-            self.states[self.state_index] = [copy.deepcopy(arr), copy.deepcopy(color_array), text]
+            self.states[self.state_index] = [copy.deepcopy(arr), copy.deepcopy(colour_array), text]
             self.state_index += 1
             
             # Merge the sorted halves
@@ -512,35 +517,35 @@ class mergeFrame(parentFrame):
         # Merge the temp arrays back into arr[left..right]
         while i < len(L) and j < len(R):
             # For each step, reset the colour of the array
-            color_array = ['red'] * len(arr)
+            colour_array = ['red'] * len(arr)
             
             # Highlight elements being compared
-            color_array[left + i] = 'orange' # Element from left subarray
-            color_array[mid + 1 + j] = 'orange' # Element from right subarray
+            colour_array[left + i] = 'orange' # Element from left subarray
+            colour_array[mid + 1 + j] = 'orange' # Element from right subarray
             
             text = f"Comparing L[{i}]={L[i]} with R[{j}]={R[j]}"
             
             if L[i] <= R[j]:
                 # Element from left subarray is smaller
-                color_array[k] = 'yellow'  # Position where element will be placed
+                colour_array[k] = 'yellow'  # Position where element will be placed
                 text += f"\nPlacing L[{i}]={L[i]} at position {k}, since L[{i}]={L[i]} ≤ R[{j}]={R[j]}"
                 
                 arr[k] = L[i] # Place current left subarray value into original array since it is less than the value in the right subarray
                 
                 # Store this state
-                self.states[self.state_index] = [copy.deepcopy(arr), color_array, text]
+                self.states[self.state_index] = [copy.deepcopy(arr), colour_array, text]
                 self.state_index += 1
                 
                 i += 1
             else:
                 # Element from right subarray is smaller
-                color_array[k] = 'yellow'  # Position where element will be placed
+                colour_array[k] = 'yellow'  # Position where element will be placed
                 text += f"\nPlacing R[{j}]={R[j]} at position {k} since, L[{i}]={L[i]} > R[{j}]={R[j]}"
                 
                 arr[k] = R[j] # Place current right subarray value into original array since it is less than the value in the left subarray
                 
                 # Store this state
-                self.states[self.state_index] = [copy.deepcopy(arr), color_array, text]
+                self.states[self.state_index] = [copy.deepcopy(arr), colour_array, text]
                 self.state_index += 1
                 
                 j += 1
@@ -550,9 +555,9 @@ class mergeFrame(parentFrame):
         # If any elements remain in the left subarray, they are copied
         while i < len(L):
             current_array = copy.deepcopy(arr)
-            color_array = ['red'] * len(arr)
-            color_array[left + i] = 'orange'  # Highlight the element being placed
-            color_array[k] = 'yellow'         # Position where it's being placed
+            colour_array = ['red'] * len(arr)
+            colour_array[left + i] = 'orange'  # Highlight the element being placed
+            colour_array[k] = 'yellow'         # Position where it's being placed
             
             text = f"Copying remaining element L[{i}]={L[i]} to position {k}"
             
@@ -560,7 +565,7 @@ class mergeFrame(parentFrame):
             current_array[k] = L[i]
             
             # Store this state
-            self.states[self.state_index] = [current_array, color_array, text]
+            self.states[self.state_index] = [current_array, colour_array, text]
             self.state_index += 1
             
             # Actually update the original array
@@ -571,9 +576,9 @@ class mergeFrame(parentFrame):
         # If any elements remain in the right subarray, they are copied
         while j < len(R):
             current_array = copy.deepcopy(arr)
-            color_array = ['red'] * len(arr)
-            color_array[mid + 1 + j] = 'orange'  # Highlight the element being placed
-            color_array[k] = 'yellow'            # Position where it's being placed
+            colour_array = ['red'] * len(arr)
+            colour_array[mid + 1 + j] = 'orange'  # Highlight the element being placed
+            colour_array[k] = 'yellow'            # Position where it's being placed
             
             text = f"Copying remaining element R[{j}]={R[j]} to position {k}"
             
@@ -581,7 +586,7 @@ class mergeFrame(parentFrame):
             current_array[k] = R[j]
             
             # Store this state
-            self.states[self.state_index] = [current_array, color_array, text]
+            self.states[self.state_index] = [current_array, colour_array, text]
             self.state_index += 1
             
             # Actually update the original array
@@ -590,13 +595,13 @@ class mergeFrame(parentFrame):
             k += 1
         
         # Show the completed merge
-        color_array = ['red'] * len(arr)
+        colour_array = ['red'] * len(arr)
         for i in range(left, right + 1):
-            color_array[i] = 'green'  # Successfully merged subarray
+            colour_array[i] = 'green'  # Successfully merged subarray
         
         text = f"Merged subarray [{left}:{right}]: {arr[left:right+1]}"
         
-        self.states[self.state_index] = [copy.deepcopy(arr), copy.deepcopy(color_array), text]
+        self.states[self.state_index] = [copy.deepcopy(arr), copy.deepcopy(colour_array), text]
         self.state_index += 1
     
 class controlFrame(ctk.CTkFrame):
