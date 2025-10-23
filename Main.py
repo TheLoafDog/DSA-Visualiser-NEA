@@ -108,10 +108,7 @@ class footer(CTkFrame):
         self.corner_radius = 0
         self.height = height
         
-        if get_appearance_mode() == "light":
-            self.appearance_mode = True
-        else:
-            self.appearance_mode = False
+        self.appearance_mode = False
         
             # widgets
         self.appearance_mode_image = CTkImage(light_image=Image.open("light-mode-sun.webp"),
