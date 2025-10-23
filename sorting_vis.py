@@ -103,7 +103,7 @@ class parentFrame(ctk.CTkFrame):
 
         # Configure the compare button
         self.control_frame.compare_both_button.configure(
-            command=lambda: self.master.control_frame.start_both(self.master.vis_1, self.master.vis_2)
+            command=lambda: self.control_frame.start_both(self.master.vis_1, self.master.vis_2)
         )
         
         # Position the new frame
@@ -667,11 +667,11 @@ def main(master, window):
     control_frame.grid(row=1, column=0, columnspan=2, padx=20, pady=20)
 
     # Bubble and insertion sort frames with speed_var and message boxes passed in
-    vis_1 = bubbleFrame(master=master, speed_var=control_frame.speed_var, message_box=vis_1_messagebox, vis_num=1, control_frame=control_frame)
-    vis_1.grid(row=0, column=0, padx=20, pady=20)
+    master.vis_1 = bubbleFrame(master=master, speed_var=control_frame.speed_var, message_box=vis_1_messagebox, vis_num=1, control_frame=control_frame)
+    master.vis_1.grid(row=0, column=0, padx=20, pady=20)
 
-    vis_2 = insertionFrame(master=master, speed_var=control_frame.speed_var, message_box=vis_2_messagebox, vis_num=2, control_frame=control_frame)
-    vis_2.grid(row=0, column=1, padx=20, pady=20)
-    vis_2.select_sort_type.set("Insertion Sort")
+    master.vis_2 = insertionFrame(master=master, speed_var=control_frame.speed_var, message_box=vis_2_messagebox, vis_num=2, control_frame=control_frame)
+    master.vis_2.grid(row=0, column=1, padx=20, pady=20)
+    master.vis_2.select_sort_type.set("Insertion Sort")
 
-    control_frame.compare_both_button.configure(command=lambda: control_frame.start_both(vis_1, vis_2))
+    control_frame.compare_both_button.configure(command=lambda: control_frame.start_both(master.vis_1, master.vis_2))
