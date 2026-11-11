@@ -1,16 +1,16 @@
-# Inheritance of Pages:                     Lines 343 - 467
-# dsa_frame class with filtering of DSAs:   Lines 236 - 342
-# search frame with linear search:          Lines 143 - 226
+# Inheritance of Pages:                     Lines 331 - 470
+# dsa_frame class with filtering of DSAs:   Lines 224 - 330
+# search frame with linear search:          Lines 139 - 223
+# hash retrieval (hash function in dsa_hash.py): Lines 473 - 477
 
 # basic python import modules
 from customtkinter import *
 from tkinter import *
 from PIL import Image
 from tkinter import messagebox
-import ast
-import math
 
 # my own python files
+import dsa_hash
 import Quiz
 
 import stack_vis
@@ -469,41 +469,10 @@ class App(CTk):
 
         self.main_page.appearance_mode = False # initially dark
     
-# the name acts as the key
-# [:-1] is needed for the '\n' for the end of each line
+# the name acts as the key; the hash function itself lives in dsa_hash.py
+# (shared with the database generator script)
 def hashDataRetrieve(key):
-    
-    # hash function
-    
-    val = 1
-    count = 1
-    flip = True
-    
-    for letter in key:
-        if flip == True:
-            val *= (ord(letter)/1.5)
-        else:
-            val += (ord(letter)*2)
-        flip = not flip
-        count *= 2
-    
-    remainder = val % 3
-    val = math.sqrt(val)
-    val = round(val/count)
-    val = str(val)
-    
-    hash_val = ""
-    
-    
-    for i in val:
-        hash_val += i
-    hash_val = round(int(hash_val) * remainder)
-    
-    # ast.literal_eval() turns the string into a dictionary if it's in the correct form
-    while ast.literal_eval(database_list[hash_val][:-1])["name"] != key:
-        hash_val += 1
-        
-    return ast.literal_eval(database_list[hash_val][:-1])
+    return dsa_hash.retrieve(key, database_list)
     
 database=open("DSA Types Database.txt", "r", encoding="utf-8")
 database_list = database.readlines()

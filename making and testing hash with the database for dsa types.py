@@ -1,6 +1,5 @@
 
-import math
-import ast
+import dsa_hash
 
 DSAs = []
 
@@ -175,7 +174,7 @@ DSAs.append(sorting)
 DSAs.append(searching)
 DSAs.append(linked_list)
 
-empty_list=[""]*500
+empty_list=[""]*dsa_hash.TABLE_SIZE
 
 #################'making the database with the hash'################
 
@@ -185,37 +184,8 @@ def makeDatabase():
 # the name of the dsa is the key
     def makingHash(element):
         key = element["name"]
-    
-        # hash function
-    
-        val = 1
-        count = 1
-        flip = True
-    
-        for letter in key:
-            if flip == True:
-                val *= (ord(letter)/1.5)
-            else:
-                val += (ord(letter)*2)
-            flip = not flip
-            count *= 2
-    
-        remainder = val % 3
-        val = math.sqrt(val)
-        val = round(val/count)
-        val = str(val)
-        
-        hash_val = ""
-    
-    
-        for i in val:
-            hash_val += i
-        hash_val = round(int(hash_val) * remainder)
-    
-        while empty_list[hash_val] != "":
-            hash_val += 1
-        
-        return hash_val
+        # hash function shared with Main.py (see dsa_hash.py); probes to the next empty slot
+        return dsa_hash.place_index(key, empty_list)
 
     for dsa in DSAs:
         empty_list[makingHash(dsa)] = dsa
@@ -240,36 +210,7 @@ database_list = database.readlines()
 # the name acts as the key
 # [:-1] is needed for the '\n' for the end of each line
 def hashRetrieve(key):
-    # hash function
-    
-    val = 1
-    count = 1
-    flip = True
-    
-    for letter in key:
-        if flip == True:
-            val *= (ord(letter)/1.5)
-        else:
-            val += (ord(letter)*2)
-        flip = not flip
-        count *= 2
-    
-    remainder = val % 3
-    val = math.sqrt(val)
-    val = round(val/count)
-    val = str(val)
-    
-    hash_val = ""
-    
-    
-    for i in val:
-        hash_val += i
-    hash_val = round(int(hash_val) * remainder)
-        
-    while ast.literal_eval(database_list[hash_val][:-1])["name"] != key:
-        hash_val += 1
-        
-    return ast.literal_eval(database_list[hash_val][:-1])
+    return dsa_hash.retrieve(key, database_list)
 
 #print(hashRetrieve("Stack")['name'])
 #print(array['name'])
