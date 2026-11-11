@@ -1,0 +1,28 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    # ubuntu-24.04 ships Python 3.12 as the system python3; using it (rather than
+    # actions/setup-python) is the reliable way to get tkinter via apt's python3-tk.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system packages (tkinter + virtual display)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk xvfb
+
+      - name: Install Python dependencies
+        run: python3 -m pip install -r requirements.txt pytest --break-system-packages
+
+      - name: Compile every module
+        run: python3 -m py_compile *.py
+
+      - name: Run tests under a virtual display
+        run: xvfb-run -a python3 -m pytest -q

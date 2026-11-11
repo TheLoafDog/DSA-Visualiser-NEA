@@ -29,6 +29,7 @@ xvfb-run -a python3.12 -m pytest -q
 ```
 Tests live in `tests/` (pytest). `tests/conftest.py` chdirs to the repo root and provides a `display` fixture that
 skips GUI tests when no display is available, so `pytest` also works without xvfb (GUI tests skip). There is no linter yet.
+The same two checks run in CI (`.github/workflows/checks.yml`) on every PR and push to main.
 
 ## Rules for Claude sessions
 - Read the latest LOG.md entry and ROADMAP.md first. Don't re-explore the whole repo.
