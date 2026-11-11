@@ -32,3 +32,7 @@
 ## 2026-11-11 — searching step functions
 - New `searching_steps.py` with pure `linear_search_steps` and `binary_search_steps` (data + target → list of `[colours, text]` states, no UI). `searching_vis` frames now return these from `search_step`; `parentFrame.start_searching_simulation` loads them and starts the animation. State sequences identical to before (checked old vs new frames on 216 data/target cases under xvfb).
 - Small fix: a non-integer search value now shows the "Please enter an integer" message and stops, instead of continuing (which raised a TypeError in the binary search). Added `tests/test_searching_steps.py`. Merged by Claude (autonomous run).
+
+## 2026-11-11 — CI workflow
+- Added `.github/workflows/checks.yml`: on pushes to main and on PRs, an ubuntu-24.04 runner installs python3-tk + xvfb, the requirements and pytest, then runs `py_compile *.py` and `pytest` under xvfb-run (the same checks as CLAUDE.md).
+- Merged by Claude (autonomous run). The first real run happens on the merge commit; see the Actions tab if it fails.

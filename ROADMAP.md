@@ -11,7 +11,7 @@ Up to 4 items per Claude session, top to bottom. Items tagged [needs Brandon] ar
 - [ ] [needs Brandon] Rename `making and testing hash with the database for dsa types.py` / `DSA Types Database.txt` to space-free names (may affect references in the NEA write-up).
 - [x] Pull the pure step-generation logic for bubble/insertion/merge sort out of `sorting_vis.py` into functions (no UI), with unit tests that the final state is sorted.
 - [x] Same for linear/binary search in `searching_vis.py`, with unit tests.
-- [ ] Add a GitHub Actions workflow that runs `py_compile` and pytest under xvfb.
+- [x] Add a GitHub Actions workflow that runs `py_compile` and pytest under xvfb.
 - [ ] Reduce duplication between `sorting_vis.parentFrame` and `searching_vis.parentFrame` (shared bar-chart/playback base class).
 
 ## Phase 2 — New implementations
