@@ -8,3 +8,7 @@
 ## 2026-11-11 — .gitignore
 - Added a Python .gitignore and untracked the committed `__pycache__/` folder (19 .pyc files).
 - No code changes. Merged by Claude (interactive session with Brandon).
+
+## 2026-11-11 — requirements.txt + README
+- Added requirements.txt (customtkinter, networkx, matplotlib, pillow) and a README "How to run" with install steps and the tkinter note.
+- Docs only. Merged by Claude (interactive session with Brandon).
