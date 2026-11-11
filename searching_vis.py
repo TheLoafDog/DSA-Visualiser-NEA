@@ -1,5 +1,6 @@
-# Linear Search Class (inheritance off parent frame):   Lines 329 - 338
-# Binary Search Class (inheritance off parent frame):   Lines 340 - 362
+# Parent frame (inherits the shared bar-chart/playback base class in playback_frame.py):  Lines 16 - 98
+# Linear Search Class (inheritance off parent frame):   Lines 100 - 109
+# Binary Search Class (inheritance off parent frame):   Lines 111 - 133
 
 # Linear search steps:  searching_steps.linear_search_steps
 # Binary search steps:  searching_steps.binary_search_steps
@@ -7,57 +8,15 @@
 import customtkinter as ctk
 import random
 
+from playback_frame import PlaybackFrame
 import searching_steps
 
 # Global Variables
 
-class parentFrame(ctk.CTkFrame):
+class parentFrame(PlaybackFrame):
     def __init__(self, master, speed_var, message_box):
-        # Passes the master and speed_var arguments for inheritance and to adjust speed of animations
-        super().__init__(master, width=800, height=600)
-        self.speed_var = speed_var  # Store reference to the speed variable
-        self.message_box = message_box
-
-        self.propagate(False)
-
-        self.title = ctk.CTkLabel(master=self, font=("Arial", 26, "bold"))
-        self.title.pack(pady=10)
-
-        self.canvas = ctk.CTkCanvas(master=self, width=600, height=350)
-        self.canvas.pack(padx=20, pady=20)
-
-        self.playback_slider = ctk.CTkSlider(master=self, height=20, command=self.on_slider_move)
-        self.playback_slider.pack(padx=20, pady=5, fill="x", side="top")
-        self.playback_slider.configure(state="disabled")
-
-        self.edit_playback_frame = ctk.CTkFrame(master=self, fg_color="transparent", border_width=0)
-        self.edit_playback_frame.pack(pady=5)
-        self.edit_buttons = []
-
-        self.beginning_button = ctk.CTkButton(master=self.edit_playback_frame, state="disabled", width=40)
-        self.beginning_button.pack(side="left", padx=3)
-        self.beginning_button.configure(text="◀◀", command=lambda: self.change_slider_value("beginning"))
-        self.edit_buttons.append(self.beginning_button)
-
-        self.decrement_button = ctk.CTkButton(master=self.edit_playback_frame, state="disabled", width=40)
-        self.decrement_button.pack(side="left", padx=3)
-        self.decrement_button.configure(text="◀|", command=lambda: self.change_slider_value("decrement"))
-        self.edit_buttons.append(self.decrement_button)
-
-        self.stop_button = ctk.CTkButton(master=self.edit_playback_frame, state="disabled", width=50)
-        self.stop_button.pack(side="left", padx=3)
-        self.stop_button.configure(text="▷", command=lambda: self.toggle_pause)
-        self.edit_buttons.append(self.stop_button)
-
-        self.increment_button = ctk.CTkButton(master=self.edit_playback_frame, state="disabled", width=40)
-        self.increment_button.pack(side="left", padx=3)
-        self.increment_button.configure(text="|▶", command=lambda: self.change_slider_value("increment"))
-        self.edit_buttons.append(self.increment_button)
-
-        self.complete_button = ctk.CTkButton(master=self.edit_playback_frame, state="disabled", width=40)
-        self.complete_button.pack(side="left", padx=3)
-        self.complete_button.configure(text="▶▶", command=lambda: self.change_slider_value("end"))
-        self.edit_buttons.append(self.complete_button)
+        # The title, canvas, playback slider/buttons and animation variables are built by PlaybackFrame
+        super().__init__(master, speed_var, message_box)
 
         # The two buttons and entry for value to be seached for in each visualiser to play the animation
         self.value_entry = ctk.CTkEntry(master=self)
@@ -75,16 +34,6 @@ class parentFrame(ctk.CTkFrame):
         self.clear_button.pack(side="right", padx=10, pady=10)
         self.clear_button.configure(command=lambda: self.clear_data())
 
-        # Keep track of whether the search is ACTIVE or PAUSED
-        self.search_active = False
-        self.after_id = None  # Store after_id to cancel scheduled events
-        self.after_increment = None
-
-        # Animation variables
-        self.states = {} # Holds the key of each step (starting at 0)
-        self.state_index = 0
-        self.animation_index = 0
-        self.last_value = None # This is so that the slider value only changes when it moves
         self.colour_array = []
 
         self.generate_random_data_set() # On start up, have data already being visualised
@@ -97,7 +46,7 @@ class parentFrame(ctk.CTkFrame):
             button.configure(state="disabled")
         self.playback_slider.configure(state="disabled")
 
-        self.search_active = False
+        self.animation_active = False
 
         self.message_box.change_message("Data cleared.")
 
@@ -111,45 +60,15 @@ class parentFrame(ctk.CTkFrame):
                 self.start_button.configure(state="disabled")
         except:
             self.message_box.change_message("There is no data to be searched.")
-        
+
+    def unpack_state(self, state): # Searching states are [colours, text]; the data itself never changes
+        return self.data, state[0], state[1]
+
     def draw_graph(self, colour_array):
-        self.canvas.delete("all")
-        c_height = 330
-        c_width = 580
-        bar_width = c_width / (len(self.data) + 1)
-        offset = 30
-        spacing = 10
-    
-        normalized_data = [i / max(self.data) for i in self.data]  # Normalize data
-        
-        for i, height in enumerate(normalized_data):
-            # Calculate coordinates for the bar
-            x0 = i * bar_width + offset + spacing
-            y0 = c_height - height * 300
-            x1 = (i + 1) * bar_width + offset
-            y1 = c_height
-            
-            # Draw the bar
-            self.canvas.create_rectangle(x0, y0, x1, y1, fill=colour_array[i])
-            
-            # Add the value label on top of the bar
-            self.canvas.create_text(
-                (x0 + x1) // 2,  # X-coordinate: center of the bar
-                y0 - 10,         # Y-coordinate: slightly above the bar
-                text=str(self.data[i]),  # Display the actual value
-                fill="black",
-                font=("Arial", 10)
-            )
-            
-        self.update_idletasks()
+        self.draw_bars(self.data, colour_array)
 
     def search_step(self, target_value): # Overridden by each search: returns the list of [colours, text] states from searching_steps
         return []
-
-    def load_states(self, states): # Stores generated [colours, text] steps into self.states
-        for state in states:
-            self.states[self.state_index] = state
-            self.state_index += 1
 
     def generate_random_data_set(self):
         self.data = [] # Data to be visualised
@@ -170,161 +89,13 @@ class parentFrame(ctk.CTkFrame):
             self.message_box.change_message("Inputted data type is invalid.\nPlease enter an integer.")
             return
 
-        self.cancel_searching()  # Stop any ongoing animations before starting a new one
-
-        self.stop_button.configure(command=self.toggle_pause)
-
-        # Reset the step variables properly
-        self.states = {}
-        self.state_index = 0
-        self.animation_index = 0
-        self.search_active = False
-        self.playback_slider.set(0)
+        self.reset_animation() # Stop any ongoing animation and clear the previous steps
 
         self.colour_array = ['grey'] * len(self.data)
 
         self.load_states(self.search_step(target_value)) # Simulates the search and stores the states
 
-        # Establish variables for the start of the animation
-        self.search_active = True
-
-        # Run methods to start the actual animation
-        self.set_slider_attributes()
-        self.run_animation()
-
-    def toggle_pause(self):        
-        if not self.search_active:
-            self.search_active = True
-            self.stop_button.configure(text="| |")
-            self.run_animation()
-        else:
-            self.search_active = False
-            self.stop_button.configure(text="▷")
-
-    def cancel_searching(self):
-        # Clear the canvas
-        self.canvas.delete("all")
-        
-        # Reset variables and cancel any pending search_step calls
-        self.search_active = False
-        
-        # Cancel any scheduled events by using after_id
-        if self.after_id:
-            self.after_cancel(self.after_id)
-            self.after_cancel(self.after_increment)
-            self.after_id = None  # Reset after_id since it is no longer active
-            self.after_increment = None
-
-    def run_animation(self):
-        if not self.search_active:
-            return
-        
-        if self.animation_index < len(self.states):
-            # basically fix all these and check the slider values and steps or whatever
-            colour_array = self.states[self.animation_index][0] # Will end up making this a 2d list in the form of : [[colour_array], [message (text)]]
-            text = self.states[self.animation_index][1]
-            self.message_box.change_message(text)
-            self.draw_graph(colour_array)
-
-            self.after_increment = self.after(int(self.speed_var.get()), lambda: self.increment_slider()) 
-            self.after_id = self.after(int(self.speed_var.get()), lambda: self.run_animation())
-        else:
-            self.stop_button.configure(text="↺", command=lambda: self.restart_visualiser(play=True))
-        
-    def change_slider_value(self, mode):
-        if mode == "increment" and self.animation_index < len(self.states)-1:
-            self.increment_slider()
-            self.adjust_canvas()
-        
-        if mode == "decrement" and self.animation_index > 0:
-            self.decrement_slider()
-        
-        if mode == "beginning":
-            self.restart_visualiser(play=False)
-
-        if mode == "end":
-            self.skip_animation()
-                
-    def on_slider_move(self, value):
-        if value != self.last_value:   
-            # Cancel any scheduled events by using after_id
-            if self.after_id:
-                self.after_cancel(self.after_id)
-                self.after_cancel(self.after_increment)
-                self.after_id = None  # Reset after_id since it is no longer active
-                self.after_increment = None
-
-            # Pause the search
-            self.search_active = False
-            self.stop_button.configure(text="▷")
-            # In case the animation finished and the command changes, reset command for stop button
-            self.stop_button.configure(command=self.toggle_pause)
-            
-            # Next set the search visualiser in relation to the slider value
-            colour_array = self.states[value][0]
-            text = self.states[value][1]
-            self.message_box.change_message(text)
-            self.draw_graph(colour_array)
-            
-            self.animation_index = value
-            
-            self.last_value = value
-
-    def adjust_canvas(self):
-        # Pause the search
-        self.search_active = False
-        self.stop_button.configure(text="▷")
-        # In case the animation finished and the command changes, reset command for stop button
-        self.stop_button.configure(command=self.toggle_pause)
-        
-        # Next set the search visualiser in relation to the slider value
-        colour_array = self.states[self.animation_index][0]
-        text = self.states[self.animation_index][1]
-        self.message_box.change_message(text)
-        self.draw_graph(colour_array)
-        
-    def increment_slider(self):
-        self.playback_slider.set(self.playback_slider.get()+1)
-        self.animation_index += 1
-
-        # Cannot add teh other stuff included in decrement slider or skip animations since increment_slider() is used elsewhere
-
-    def decrement_slider(self):
-        self.playback_slider.set(self.playback_slider.get()-1)
-        self.animation_index = self.playback_slider.get()
-        self.adjust_canvas()
-
-    def skip_animation(self):
-        self.animation_index = len(self.states)-1
-        self.playback_slider.set(self.animation_index)
-        self.adjust_canvas()
-        
-    def restart_visualiser(self, play):
-        self.stop_button.configure(command=self.toggle_pause) # Reset command for stop button
-        
-        # Establish variables for the start of the animation
-        self.animation_index = 0
-
-        if play:
-            self.search_active = True
-            
-            # Run methods to start the actual animation
-            self.set_slider_attributes()
-        
-            self.run_animation()
-        else:
-            self.playback_slider.set(0)
-            self.adjust_canvas()
-
-    def set_slider_attributes(self):
-        self.playback_slider.set(0)
-        actions_number = len(self.states) - 1
-        self.playback_slider.configure(from_=0, to=actions_number, number_of_steps=actions_number)
-        # Reactivate slider and other buttons
-        self.playback_slider.configure(state="normal")
-        self.stop_button.configure(text="| |")
-        for button in self.edit_buttons:
-            button.configure(state="normal")
+        self.begin_animation()
 
 class linearFrame(parentFrame):
     def __init__(self, master, speed_var, message_box):

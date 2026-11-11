@@ -36,3 +36,7 @@
 ## 2026-11-11 — CI workflow
 - Added `.github/workflows/checks.yml`: on pushes to main and on PRs, an ubuntu-24.04 runner installs python3-tk + xvfb, the requirements and pytest, then runs `py_compile *.py` and `pytest` under xvfb-run (the same checks as CLAUDE.md).
 - Merged by Claude (autonomous run). The first real run happens on the merge commit; see the Actions tab if it fails.
+
+## 2026-11-11 — shared playback base class
+- New `playback_frame.py` with `PlaybackFrame`: the title, bar-chart canvas, playback slider + ◀◀ ◀| ▷ |▶ ▶▶ buttons and all the step/pause/restart/skip logic that `sorting_vis.parentFrame` and `searching_vis.parentFrame` each had a copy of. Both now inherit from it (sorting adds its dropdown via `build_header_widgets` and index labels; each defines `unpack_state` for its state shape). ~300 duplicated lines removed.
+- Verified the drawn bars and widget states are identical for a scripted playback session before/after. Two small fixes: the sorting slider now shows the message of the step it points at (it showed the previous step's), and starting a new sort clears the previous run's states. Added `tests/test_playback_frame.py` (GUI, skipped without a display). Merged by Claude (autonomous run).
