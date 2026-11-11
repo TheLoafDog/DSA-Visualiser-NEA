@@ -1,8 +1,15 @@
-## How to run:
-	Install the libraries
-	Run the Main.py file
+## How to run
+Requires Python 3 with **tkinter** (included with the python.org installers on Windows/macOS;
+on Debian/Ubuntu install it with `sudo apt install python3-tk`).
 
-## Libraries to install and import:
+```
+pip install -r requirements.txt
+python Main.py
+```
+
+Run `Main.py` from the repository folder, as it loads the icons and the revision database by relative path.
+
+## Libraries used
 	PIL (pillow) - for images
 	Networkx - for graph nodes
 	Matplotlib - for graph axis
