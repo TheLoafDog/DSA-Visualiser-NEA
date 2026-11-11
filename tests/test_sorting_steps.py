@@ -10,6 +10,7 @@ ALGORITHMS = [
     sorting_steps.insertion_sort_steps,
     sorting_steps.merge_sort_steps,
     sorting_steps.quick_sort_steps,
+    sorting_steps.selection_sort_steps,
 ]
 
 random.seed(2024)
@@ -41,10 +42,11 @@ def test_states_are_well_formed(algorithm, data):
 
 
 @pytest.mark.parametrize("algorithm", [sorting_steps.bubble_sort_steps, sorting_steps.insertion_sort_steps,
-                                       sorting_steps.quick_sort_steps], ids=lambda f: f.__name__)
+                                       sorting_steps.quick_sort_steps, sorting_steps.selection_sort_steps],
+                                      ids=lambda f: f.__name__)
 @pytest.mark.parametrize("data", DATASETS, ids=[f"d{i}" for i in range(len(DATASETS))])
 def test_swap_based_sorts_keep_every_step_a_permutation(algorithm, data):
-    # Bubble, insertion and quick sort only ever swap/shift, so every snapshot holds the
+    # Bubble, insertion, quick and selection sort only ever swap/shift, so every snapshot holds the
     # same multiset. (Merge sort writes the merged values back over the working
     # array while they are held in temporary halves, so its snapshots don't.)
     for snapshot, _, _ in algorithm(data):
@@ -77,7 +79,8 @@ def test_insertion_sort_on_sorted_input_takes_no_shifts():
 
 
 def test_step_functions_table_matches_dropdown_names():
-    assert list(sorting_steps.STEP_FUNCTIONS) == ["Bubble Sort", "Insertion Sort", "Merge Sort", "Quick Sort"]
+    assert list(sorting_steps.STEP_FUNCTIONS) == ["Bubble Sort", "Insertion Sort", "Merge Sort", "Quick Sort",
+                                                   "Selection Sort"]
 
 
 def test_frame_classes_match_step_functions():
@@ -103,3 +106,28 @@ def test_quick_sort_step_count_on_reverse_input():
     states = sorting_steps.quick_sort_steps(list(range(n, 0, -1)))
     comparisons = sum(1 for _, _, t in states if "pivot" in t and ("swap it" in t or "leave it" in t))
     assert comparisons == n * (n - 1) // 2
+
+
+def test_selection_sort_green_prefix_is_final_and_grows():
+    data = [5, 3, 8, 1, 9, 2]
+    states = sorting_steps.selection_sort_steps(data)
+    final = sorted(data)
+    last_green = -1
+    for snapshot, colours, _ in states:
+        greens = [i for i, c in enumerate(colours) if c == 'green']
+        assert greens == list(range(len(greens))), "sorted region must be a prefix"
+        assert len(greens) >= last_green
+        last_green = len(greens)
+        for i in greens:
+            assert snapshot[i] == final[i]
+        assert colours.count('purple') <= 1 and colours.count('orange') <= 1
+
+
+def test_selection_sort_comparison_count():
+    # Selection sort always does n(n-1)/2 comparisons whatever the input
+    for data in ([4, 3, 2, 1], [1, 2, 3, 4], [3, 1, 4, 1, 5]):
+        n = len(data)
+        states = sorting_steps.selection_sort_steps(data)
+        comparisons = sum(1 for _, _, t in states if "smallest value so far" in t and "Start" not in t)
+        assert comparisons == n * (n - 1) // 2
+        assert sum(1 for _, _, t in states if "final position" in t) == n - 1
