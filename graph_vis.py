@@ -1,9 +1,10 @@
-# breadth-first-search (queue):     Lines 484 - 548
-# depth-first-search (recursive):   Lines 551 - 616
+# breadth-first-search (queue):     Lines 493 - 557
+# depth-first-search (recursive):   Lines 560 - 625
+# Dijkstra's shortest path:         Lines 627 - 667   (algorithm itself is pure, in dijkstra_steps.py)
 
-# add_node:     Lines 393 - 420
-# delete_node:  Lines 422 - 446
-# add_edge:     Lines 448 - 467
+# add_node:     Lines 400 - 427
+# delete_node:  Lines 429 - 453
+# add_edge:     Lines 455 - 474
 
 import customtkinter as ctk
 import tkinter as tk # For boolean variable
@@ -12,6 +13,8 @@ import random
 import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+import dijkstra_steps
 
 class GraphVisualiser(ctk.CTkFrame):
     def __init__(self, master):
@@ -128,6 +131,10 @@ class GraphVisualiser(ctk.CTkFrame):
 
         self.get_weight = ctk.CTkButton(self.controls_frame, state="disabled", text="Total Weight", command=self.get_total_weight)
         self.get_weight.grid(row=5, column=1)
+
+        # Dijkstra's shortest path (uses Start Node and, optionally, Find; needs a weighted graph)
+        self.dijkstra_button = ctk.CTkButton(self.controls_frame, state="disabled", text="Dijkstra", command=lambda: self.visualize_dijkstra(self.start_node_entry.get(), self.find_node_entry.get()))
+        self.dijkstra_button.grid(row=5, column=0)
 
         # Speed control
         self.speed_frame = ctk.CTkFrame(self.controls_frame, border_width=0)
@@ -473,12 +480,14 @@ class GraphVisualiser(ctk.CTkFrame):
                 if 'weight' not in self.graph[u][v]:
                     self.graph[u][v]['weight'] = random.randint(1, 20)
             self.get_weight.configure(state="normal")
+            self.dijkstra_button.configure(state="normal")
         else:
             # Remove weights from the graph
             for (u, v) in self.graph.edges():
                 if 'weight' in self.graph[u][v]:
                     del self.graph[u][v]['weight']
             self.get_weight.configure(state="disabled")
+            self.dijkstra_button.configure(state="disabled")
         self.draw_graph()
 
     def visualize_bfs(self, start_entry, find_entry):
@@ -614,6 +623,48 @@ class GraphVisualiser(ctk.CTkFrame):
         for neighbour in self.graph.neighbors(cur_node):
             if neighbour not in visited:  # Only recurse on unvisited neighbors
                 self.dfs_recursive(neighbour, start_node, find_node, visited)
+
+    def visualize_dijkstra(self, start_entry, find_entry):
+        self.cancel_animation()
+
+        if len(self.graph) == 0: # Check if the graph is empty
+            self.output_message("Graph is empty")
+            return
+
+        if not self.is_weighted.get():
+            self.output_message("Tick 'Weighted Graph' first: Dijkstra's algorithm needs edge weights")
+            return
+
+        try:
+            start_node = int(start_entry)
+            find_node = None
+            if find_entry.strip() != "":
+                find_node = int(find_entry)
+        except ValueError:
+            self.output_message("Please enter a valid node number")
+            return
+
+        if start_node not in self.graph.nodes():
+            self.output_message(f"Node {start_node} is not in the graph")
+            return
+        if find_node is not None and find_node not in self.graph.nodes():
+            self.output_message(f"Node {find_node} is not in the graph")
+            return
+
+        # The algorithm is pure (no UI) in dijkstra_steps.py; see tests/test_dijkstra_steps.py
+        edges = [(u, v, self.graph[u][v]['weight']) for (u, v) in self.graph.edges()]
+        states, distances, previous = dijkstra_steps.dijkstra_steps(edges, start_node, self.graph.nodes(), find_node)
+
+        self.reset_animation_variables()
+        self.states[0] = [copy.deepcopy(self.node_colours), "", ""]
+        for state in states:
+            self.states[self.state_index] = state
+            self.state_index += 1
+
+        self.is_running = True
+        self.set_slider_attributes() # Give data to slider
+
+        self.run_animation()
 
     def clear_graph(self):
         self.generate_random_graph(num_nodes=0)

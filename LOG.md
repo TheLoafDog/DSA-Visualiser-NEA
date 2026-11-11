@@ -56,3 +56,7 @@
 ## 2026-11-11 — binary search tree mode
 - New third tab "Binary Search Tree" in the tree visualiser (`tree_vis.BinarySearchTreeVisualiser`): values 1–99 (max 12), Insert and Search animate each comparison (orange = node being compared, green = found/placed, red = empty spot so not found, white = new node before placement), with the path and comparison count in OUTPUT; pre/in/post-order traversals use true left/right children; Generate Random BST and Clear.
 - The tree logic is pure in `bst_steps.py` (`BST` with `insert_steps`, `search_steps`, `traversal_steps`, `layout` — x by in-order rank, y by depth). Tests: `tests/test_bst_steps.py` (BST property, search/insert states, traversals, layout) and `tests/test_tree_vis.py` (GUI, skipped without a display). Existing Basic/Binary Tree tabs untouched. Merged by Claude (autonomous run).
+
+## 2026-11-11 — Dijkstra's shortest path
+- New `dijkstra_steps.py` (pure: edges + start [+ target] → animation states, distances, previous map; `shortest_path`, `format_distances`). Graph visualiser gets a "Dijkstra" button (enabled with the Weighted Graph checkbox) using Start Node and optional Find: orange = node being settled, yellow = neighbour being relaxed, green = settled, purple = final path to the target; OUTPUT shows the distance table (∞ for unreachable).
+- Tests: `tests/test_dijkstra_steps.py` (textbook graph, path/early-stop, 25 random graphs checked against networkx) and `tests/test_graph_vis.py` (GUI, skipped without a display). Merged by Claude (autonomous run).
