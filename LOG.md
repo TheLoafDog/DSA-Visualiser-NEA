@@ -44,3 +44,7 @@
 ## 2026-11-11 — quick sort
 - New `sorting_steps.quick_sort_steps` (Lomuto partition, last element as pivot; purple pivot, orange element being compared, cyan "<= pivot" region, green for placed pivots) and a `quickFrame` in `sorting_vis`. The dropdown now lists Bubble/Insertion/Merge/Quick Sort, driven by a `FRAME_CLASSES` table instead of an if/elif chain.
 - Existing tests now cover quick sort too, plus tests that green bars are always in their final position and the worst-case comparison count. Merged by Claude (autonomous run).
+
+## 2026-11-11 — selection sort
+- New `sorting_steps.selection_sort_steps` (purple = smallest so far, orange = element being compared, green = sorted prefix) and a `selectionFrame` in `sorting_vis`; the dropdown now also lists Selection Sort.
+- Tests: selection sort joins the shared parametrised tests, plus checks that the green prefix is always final/growing and that there are exactly n(n-1)/2 comparisons. Merged by Claude (autonomous run).

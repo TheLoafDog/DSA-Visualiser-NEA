@@ -14,6 +14,7 @@ Colour meanings (shared with sorting_vis):
   purple/cyan - left/right subarrays about to be merged (merge sort)
   yellow - position an element is being placed into (merge sort)
   purple - pivot (quick sort); cyan - elements found to be <= the pivot (quick sort)
+  purple - smallest value found so far in the pass (selection sort)
 """
 import copy
 
@@ -246,9 +247,54 @@ def quick_sort_steps(data):
     return states
 
 
+def selection_sort_steps(data):
+    """Selection sort: repeatedly find the minimum of the unsorted part and swap it to the front.
+
+    Each comparison shows the element being scanned (orange) against the
+    current minimum (purple); the sorted prefix stays green.
+    """
+    arr = list(data)
+    states = []
+    n = len(arr)
+
+    def colours(sorted_upto, minimum=None, current=None):
+        colour_array = ['green' if i < sorted_upto else 'red' for i in range(n)]
+        if minimum is not None:
+            colour_array[minimum] = 'purple'   # Smallest value found so far
+        if current is not None:
+            colour_array[current] = 'orange'   # Element being compared with it
+        return colour_array
+
+    for i in range(n - 1):
+        min_index = i
+        states.append([copy.deepcopy(arr), colours(i, minimum=min_index),
+                       f"Pass {i + 1}: find the smallest value in the unsorted part {arr[i:]}.\n"
+                       f"Start by assuming {arr[i]} (index {i}) is the smallest."])
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_index]:
+                text = (f"{arr[j]} < {arr[min_index]}, so {arr[j]} (index {j}) is the new smallest value so far.")
+                min_index = j
+                states.append([copy.deepcopy(arr), colours(i, minimum=min_index), text])
+            else:
+                states.append([copy.deepcopy(arr), colours(i, minimum=min_index, current=j),
+                               f"{arr[j]} >= {arr[min_index]}, so the smallest value so far stays {arr[min_index]}."])
+
+        if min_index != i:
+            arr[i], arr[min_index] = arr[min_index], arr[i]
+            text = (f"Swap the smallest value {arr[i]} (was index {min_index}) with {arr[min_index]} at index {i}.\n"
+                    f"Index {i} is now in its final position.")
+        else:
+            text = f"{arr[i]} is already the smallest value, so no swap is needed.\nIndex {i} is now in its final position."
+        states.append([copy.deepcopy(arr), colours(i + 1), text])
+
+    states.append([copy.deepcopy(arr), ['green'] * n, "Data has been sorted with selection sort."])
+    return states
+
+
 STEP_FUNCTIONS = {
     "Bubble Sort": bubble_sort_steps,
     "Insertion Sort": insertion_sort_steps,
     "Merge Sort": merge_sort_steps,
     "Quick Sort": quick_sort_steps,
+    "Selection Sort": selection_sort_steps,
 }
