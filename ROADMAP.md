@@ -9,7 +9,7 @@ Up to 4 items per Claude session, top to bottom. Items tagged [needs Brandon] ar
 - [x] Add a test that validates the quiz pool: every `answer_position` is one of its `options`, difficulty is 1–3, every topic is a known DSA name; fix any bad questions it finds.
 - [x] Move the hash function into one shared module used by both `Main.py` and the database generator script, removing the duplicate (keep behaviour and the generated file identical).
 - [ ] [needs Brandon] Rename `making and testing hash with the database for dsa types.py` / `DSA Types Database.txt` to space-free names (may affect references in the NEA write-up).
-- [ ] Pull the pure step-generation logic for bubble/insertion/merge sort out of `sorting_vis.py` into functions (no UI), with unit tests that the final state is sorted.
+- [x] Pull the pure step-generation logic for bubble/insertion/merge sort out of `sorting_vis.py` into functions (no UI), with unit tests that the final state is sorted.
 - [ ] Same for linear/binary search in `searching_vis.py`, with unit tests.
 - [ ] Add a GitHub Actions workflow that runs `py_compile` and pytest under xvfb.
 - [ ] Reduce duplication between `sorting_vis.parentFrame` and `searching_vis.parentFrame` (shared bar-chart/playback base class).
