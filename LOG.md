@@ -48,3 +48,7 @@
 ## 2026-11-11 — selection sort
 - New `sorting_steps.selection_sort_steps` (purple = smallest so far, orange = element being compared, green = sorted prefix) and a `selectionFrame` in `sorting_vis`; the dropdown now also lists Selection Sort.
 - Tests: selection sort joins the shared parametrised tests, plus checks that the green prefix is always final/growing and that there are exactly n(n-1)/2 comparisons. Merged by Claude (autonomous run).
+
+## 2026-11-11 — quiz questions for Queue, Searching, Tree
+- Added 24 questions to `Quiz.question_pool`: 7 Queue-only, 8 Searching (the pool previously had none, so the Searching checkbox now yields questions) and 9 Tree-only, spread over difficulties 1–3. Pool is now 85 questions; `tests/test_quiz_pool.py` passes on all of them.
+- Updated the line-number header comments in `Quiz.py`. Merged by Claude (autonomous run).

@@ -1,8 +1,8 @@
-# Priority Queue:   301 - 358
+# Priority Queue:   328 - 385
 
 # Question class:   12 - 18
-# Timer class:      98 - 129
-# Quiz Page class:  132 - 444
+# Timer class:      125 - 156
+# Quiz Page class:  159 - 471
 
 
 import customtkinter as ctk
@@ -92,6 +92,33 @@ question_pool = [
     Question("What type of linked list has no NULL pointers?", 2, ["Linked List"], ["Circular linked list", "Singly linked list", "Doubly linked list", "Static linked list"], "Circular linked list"),
     Question("Which data structure does not require shifting elements on deletion?", 1, ["Linked List"], ["Linked List", "Array", "Stack", "Queue"], "Linked List"),
     Question("What is the space complexity of a doubly linked list node?", 2, ["Linked List"], ["O(2)", "O(1)", "O(n)", "O(log n)"], "O(2)"),
+    # Queue
+    Question("Which order does a queue process its elements in?", 1, ["Queue"], ["FIFO (first in, first out)", "LIFO (last in, first out)", "Random order", "Sorted order"], "FIFO (first in, first out)"),
+    Question("In a queue, where is a new element added?", 1, ["Queue"], ["At the rear", "At the front", "In the middle", "At the smallest index"], "At the rear"),
+    Question("What does the front pointer of a queue point to?", 2, ["Queue"], ["The next element to be dequeued", "The last element added", "An empty slot", "The largest element"], "The next element to be dequeued"),
+    Question("What happens if you dequeue from an empty queue?", 2, ["Queue"], ["Underflow error", "Overflow error", "The front moves forward", "Nothing, it returns 0"], "Underflow error"),
+    Question("In a linear (non-circular) array queue, what problem occurs after many dequeues?", 3, ["Queue"], ["Space at the front cannot be reused", "The rear pointer resets to 0", "Elements become unsorted", "Elements are duplicated"], "Space at the front cannot be reused"),
+    Question("In a priority queue, which element is removed first?", 2, ["Queue"], ["The one with the highest priority", "The one added first", "The one added last", "The one with the smallest value"], "The one with the highest priority"),
+    Question("In a circular queue with an array of size n, which index follows index n-1?", 3, ["Queue"], ["0", "n", "n-2", "-1"], "0"),
+    # Searching
+    Question("What is the time complexity of a linear search in the worst case?", 1, ["Searching", "Array"], ["O(n)", "O(1)", "O(log n)", "O(n^2)"], "O(n)"),
+    Question("What must be true of the data before a binary search can be used?", 1, ["Searching"], ["It must be sorted", "It must contain no duplicates", "It must be stored in a linked list", "It must have an even number of items"], "It must be sorted"),
+    Question("Binary search starts by comparing the target with which element?", 2, ["Searching"], ["The middle element", "The first element", "The last element", "A random element"], "The middle element"),
+    Question("What is the worst-case time complexity of binary search?", 2, ["Searching"], ["O(log n)", "O(n)", "O(1)", "O(n log n)"], "O(log n)"),
+    Question("In a binary search, the target is larger than the middle element. Which half is searched next?", 2, ["Searching"], ["The right (upper) half", "The left (lower) half", "Both halves", "The search stops"], "The right (upper) half"),
+    Question("At most how many comparisons does a binary search need on 1024 sorted items?", 3, ["Searching"], ["11", "512", "1024", "32"], "11"),
+    Question("When is a linear search a better choice than a binary search?", 3, ["Searching"], ["When the data is unsorted and small", "When the data is sorted and large", "When the data has no duplicates", "Never"], "When the data is unsorted and small"),
+    Question("In a binary search, when does the search conclude that the target is not present?", 3, ["Searching"], ["When the low index passes the high index", "When the middle element is 0", "After n comparisons", "When the first element is checked"], "When the low index passes the high index"),
+    # Tree
+    Question("What is the topmost node of a tree called?", 1, ["Tree"], ["Root", "Leaf", "Branch", "Head"], "Root"),
+    Question("What is a node with no children called?", 1, ["Tree"], ["Leaf", "Root", "Parent", "Sibling"], "Leaf"),
+    Question("What is the maximum number of children a node can have in a binary tree?", 1, ["Tree"], ["2", "1", "3", "Unlimited"], "2"),
+    Question("Which traversal of a binary search tree visits the nodes in ascending order?", 2, ["Tree"], ["In-order", "Pre-order", "Post-order", "Level-order"], "In-order"),
+    Question("In pre-order traversal, when is the root visited?", 2, ["Tree"], ["Before its subtrees", "Between its subtrees", "After its subtrees", "Never"], "Before its subtrees"),
+    Question("Where is a value smaller than the root stored in a binary search tree?", 2, ["Tree"], ["In the left subtree", "In the right subtree", "At the root", "In a leaf only"], "In the left subtree"),
+    Question("What is the worst-case time complexity of searching an unbalanced binary search tree with n nodes?", 3, ["Tree"], ["O(n)", "O(log n)", "O(1)", "O(n log n)"], "O(n)"),
+    Question("What is the maximum number of nodes in a binary tree of height h (root at height 0)?", 3, ["Tree"], ["2^(h+1) - 1", "2h", "h^2", "2^h"], "2^(h+1) - 1"),
+    Question("Inserting the values 5, 3, 8, 1 in that order into an empty binary search tree gives which root?", 3, ["Tree"], ["5", "1", "3", "8"], "5"),
 ]
 
 # Making a frame that hold the timer
