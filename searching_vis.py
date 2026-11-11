@@ -1,12 +1,13 @@
-# Linear Search Class (inheritance off parent frame):   Lines 320 - 380
-# Binary Search Class (inheritance off parent frame):   Lines 331 - 380
+# Linear Search Class (inheritance off parent frame):   Lines 329 - 338
+# Binary Search Class (inheritance off parent frame):   Lines 340 - 362
 
-# Linear search steps:  Lines 382 - 453
-# Binary search steps:  Lines 410 - 453
+# Linear search steps:  searching_steps.linear_search_steps
+# Binary search steps:  searching_steps.binary_search_steps
 
-import copy
 import customtkinter as ctk
 import random
+
+import searching_steps
 
 # Global Variables
 
@@ -142,8 +143,13 @@ class parentFrame(ctk.CTkFrame):
             
         self.update_idletasks()
 
-    def search_step(self): # This is used to simulate the steps of the animation and add it to the states array.
-        pass
+    def search_step(self, target_value): # Overridden by each search: returns the list of [colours, text] states from searching_steps
+        return []
+
+    def load_states(self, states): # Stores generated [colours, text] steps into self.states
+        for state in states:
+            self.states[self.state_index] = state
+            self.state_index += 1
 
     def generate_random_data_set(self):
         self.data = [] # Data to be visualised
@@ -162,7 +168,8 @@ class parentFrame(ctk.CTkFrame):
             target_value = int(target_value)
         except ValueError:
             self.message_box.change_message("Inputted data type is invalid.\nPlease enter an integer.")
-            
+            return
+
         self.cancel_searching()  # Stop any ongoing animations before starting a new one
 
         self.stop_button.configure(command=self.toggle_pause)
@@ -173,15 +180,17 @@ class parentFrame(ctk.CTkFrame):
         self.animation_index = 0
         self.search_active = False
         self.playback_slider.set(0)
-        self.cur_index = 0 # For the linear search
-        self.matches = [] # For the linear search, this will be a list for all the indexes containing the target value
-        self.high = len(self.data) - 1 # For the binary search
-        self.found = False # For the binary search iteration
-        self.low = 0
 
         self.colour_array = ['grey'] * len(self.data)
 
-        self.search_step(target_value) # Recursive function that simulates the search and stores the states
+        self.load_states(self.search_step(target_value)) # Simulates the search and stores the states
+
+        # Establish variables for the start of the animation
+        self.search_active = True
+
+        # Run methods to start the actual animation
+        self.set_slider_attributes()
+        self.run_animation()
 
     def toggle_pause(self):        
         if not self.search_active:
@@ -324,60 +333,9 @@ class linearFrame(parentFrame):
         # Tailor widgets to the search
         self.title.configure(text="Visualiser 1: Linear Search")
         self.start_button.configure(text="Start Linear Search")
-        
-        # Step variables for linear search
-        self.cur_index = 0
 
-    def search_step(self, target_value): # Override base search_step for recursive linear search
-        if self.cur_index < len(self.data):
-            # Highlight the elements that match green and those that don't in red, those yet to be compared remain grey (default)
-            self.colour_array[self.cur_index] = 'orange'
-
-            text = "Comparing data in index " + str(self.cur_index) + " and the target value, " + str(target_value)
-            # Instead of drawing the array now, it just stores the variables as a state
-            self.states[self.state_index] = [copy.deepcopy(self.colour_array), text]
-
-            if self.data[self.cur_index] == target_value: # Checks whether the current value matches with the searched value
-                self.colour_array[self.cur_index] = 'green'
-                
-                text = "MATCH found!\nData[" + str(self.cur_index) + "] == " + str(target_value)
-                # Instead of drawing the array now, it just stores the variables as a state
-                self.states[self.state_index] = [copy.deepcopy(self.colour_array), text]
-                self.matches.append(self.cur_index) # Add match
-            else:
-                # Instead of drawing the array now, it just stores the variables as a state
-                text = "NO MATCH found!\nData[" + str(self.cur_index) + "] != " + str(target_value)
-                self.states[self.state_index] = [copy.deepcopy(self.colour_array), text]
-                
-                self.colour_array[self.cur_index] = 'red'
-
-            self.cur_index += 1
-            self.state_index += 1
-
-            self.search_step(target_value) 
-        else: # Simulation ends
-            colour_array = [] # Manually add the final state
-            for _ in range(0, len(self.data)):
-                colour_array.append('grey')
-                
-            if self.matches:
-                text = "Matches found at indexes: " + str(self.matches)[1:-1] + "."
-            else: # If it is empty, no matches
-                text = str(target_value) + " does not exist."
-
-            for i in self.matches:
-                colour_array[i] = 'green'
-
-            # Instead of drawing the array now, it just stores the variables as a state
-            self.states[self.state_index] = [copy.deepcopy(colour_array), text]
-
-            # Establish variables for the start of the animation
-            self.search_active = True
-
-            # Run methods to start the actual animation
-            self.set_slider_attributes()
-
-            self.run_animation()
+    def search_step(self, target_value): # Override base search_step: linear search states from searching_steps
+        return searching_steps.linear_search_steps(self.data, target_value)
 
 class binaryFrame(parentFrame):
     def __init__(self, master, speed_var, message_box):
@@ -386,13 +344,6 @@ class binaryFrame(parentFrame):
         # Tailor widgets to the search
         self.title.configure(text="Visualiser 2: Binary Search")
         self.start_button.configure(text="Start Binary Search")
-
-        # Step variables for binary search
-        self.high = 0 # This would be the final index of the data set
-        self.low = 0
-        self.mid = 0
-
-        self.found = False # Check when the simulation is completed
 
     def generate_random_data_set(self): # Overwrite this method so that it sorts the values
         self.data = [] # Data to be visualised
@@ -407,59 +358,9 @@ class binaryFrame(parentFrame):
         text = "Visualises random data set: (sorted)\n" + str(self.data)
         self.message_box.change_message(text)
 
-    def search_step(self, value): # Override base search_step for recursive binary search
-        while self.high >= self.low and not self.found:
-            self.mid = (self.high + self.low) // 2
-            self.colour_array[self.mid] = "orange"
-            self.states[self.state_index] = [copy.deepcopy(self.colour_array), "Compare the middle value with the value.\nMiddle index: " + str(self.mid) + " = (" + str(self.high) + " + " + str(self.low) + ") // 2"]
-            self.state_index += 1
+    def search_step(self, value): # Override base search_step: binary search states from searching_steps
+        return searching_steps.binary_search_steps(self.data, value)
 
-            if value == self.data[self.mid]:
-                self.colour_array = ['grey'] * len(self.data)
-                self.colour_array[self.mid] = 'green'
-                # Colour the final searched array green
-                self.states[self.state_index] = [copy.deepcopy(self.colour_array), "Data[" + str(self.mid) + "] == " + str(value) + ".\nValue found at index: " + str(self.mid) + "."]
-                self.state_index += 1
-
-                # Reset colour of array
-                self.colour_array[self.mid] = 'grey'
-
-                self.found = True
-            else:
-                # Adjust search boundaries and recurse
-                if self.data[self.mid] < value:
-                    # Target is in the right half
-                    text = "Data[" + str(self.mid) + "] < " + str(value) + ".\nValue is greater, so we get rid of all the values on the left side (greater values) of the middle (inclusive)."
-                    for i in range(self.low, self.mid + 1):
-                        self.colour_array[i] = 'red'
-                    self.low = self.mid + 1
-                else:
-                    # Target is in the left half
-                    text = "Data[" + str(self.mid) + "] > " + str(value) + ".\nValue is smaller, so we get rid of all the values on the right side (smaller values) of the middle (inclusive)."
-                    for i in range(self.mid, self.high + 1):
-                        self.colour_array[i] = 'red'
-                    self.high = self.mid - 1
-
-                self.states[self.state_index] = [copy.deepcopy(self.colour_array), text]
-                self.state_index += 1
-        
-        if not self.found:
-            # Target not found
-            text = ""
-            self.colour_array = ['grey'] * len(self.data)
-            self.states[self.state_index] = [copy.deepcopy(self.colour_array), str(value) + " does not exist."]
-            self.state_index += 1
-
-            self.end = True
-
-
-        # Establish variables for the start of the animation
-        self.search_active = True
-            
-        # Run methods to start the actual animation
-        self.set_slider_attributes()
-        self.run_animation()
-    
 class controlFrame(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
