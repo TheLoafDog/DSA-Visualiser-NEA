@@ -52,3 +52,7 @@
 ## 2026-11-11 — quiz questions for Queue, Searching, Tree
 - Added 24 questions to `Quiz.question_pool`: 7 Queue-only, 8 Searching (the pool previously had none, so the Searching checkbox now yields questions) and 9 Tree-only, spread over difficulties 1–3. Pool is now 85 questions; `tests/test_quiz_pool.py` passes on all of them.
 - Updated the line-number header comments in `Quiz.py`. Merged by Claude (autonomous run).
+
+## 2026-11-11 — binary search tree mode
+- New third tab "Binary Search Tree" in the tree visualiser (`tree_vis.BinarySearchTreeVisualiser`): values 1–99 (max 12), Insert and Search animate each comparison (orange = node being compared, green = found/placed, red = empty spot so not found, white = new node before placement), with the path and comparison count in OUTPUT; pre/in/post-order traversals use true left/right children; Generate Random BST and Clear.
+- The tree logic is pure in `bst_steps.py` (`BST` with `insert_steps`, `search_steps`, `traversal_steps`, `layout` — x by in-order rank, y by depth). Tests: `tests/test_bst_steps.py` (BST property, search/insert states, traversals, layout) and `tests/test_tree_vis.py` (GUI, skipped without a display). Existing Basic/Binary Tree tabs untouched. Merged by Claude (autonomous run).

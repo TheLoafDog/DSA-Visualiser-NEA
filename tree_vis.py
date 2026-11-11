@@ -1,13 +1,15 @@
-# Basic Tree (inherited off Graph):         Lines 23 - 477
-# Binary Tree (inherited off Basic Tree):   Lines 479 - 846
+# Basic Tree (inherited off Graph):                  Lines 26 - 480
+# Binary Tree (inherited off Basic Tree):            Lines 482 - 845
+# Binary Search Tree (inherited off Binary Tree):    Lines 848 - 1054
+#   (insert/search/traversal step logic is pure, in bst_steps.py)
 
 # BFS and DFS are inherited and are the same function used in Graph
 
-# Pre-order traversal:          Lines 444 - 458
-# Post-order traversal:         Lines 460 - 474
-# In-order traversal:           Lines 703 - 727
+# Pre-order traversal:          Lines 447 - 461
+# Post-order traversal:         Lines 463 - 477
+# In-order traversal:           Lines 706 - 730
 
-# Hierarchal layout function:   Lines 209 - 331
+# Hierarchal layout function:   Lines 212 - 334
 
 
 import customtkinter as ctk
@@ -19,6 +21,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 import graph_vis
+import bst_steps
 
 class TreeVisualiser(graph_vis.GraphVisualiser):
     def __init__(self, master):
@@ -842,6 +845,214 @@ class BinaryTreeVisualiser(TreeVisualiser):
         self.draw_graph()
 
 
+class BinarySearchTreeVisualiser(BinaryTreeVisualiser):
+    """Binary search tree mode: values 1-99, insert/search animate the comparisons.
+
+    The tree itself lives in a pure `bst_steps.BST` (see tests/test_bst_steps.py);
+    this class only mirrors it into self.graph / self.pos for drawing.
+    """
+    MAX_NODES = 12
+
+    def __init__(self, master):
+        super().__init__(master=master)
+        self.bst = bst_steps.BST()
+
+    def setVis(self):
+        # Split the page into: canvas, output, and UI
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        for row in range(4):
+            self.grid_rowconfigure(row, weight=1)
+
+        # Create GUI components
+        self.canvas_frame = ctk.CTkFrame(self, fg_color="grey", border_width=0)
+        self.canvas_frame.grid(row=0, column=0, rowspan=3, pady=10, padx=10)
+
+        self.controls_frame = ctk.CTkFrame(self)
+        self.controls_frame.grid(row=0, column=1, rowspan=2, sticky="nsew", pady=10, padx=10)
+        for column in range(3):
+            self.controls_frame.columnconfigure(column, weight=1)
+        for row in range(8):
+            self.controls_frame.rowconfigure(row, weight=1)
+
+        self.message_frame = ctk.CTkFrame(self)
+        self.message_frame.grid(row=2, column=1, rowspan=2, sticky="nsew", pady=10, padx=10)
+
+        self.output_frame = ctk.CTkFrame(self)
+        self.output_frame.grid(row=3, column=0, sticky="nsew", pady=10, padx=10)
+
+        # Tree Generation
+        self.random_graph_button = ctk.CTkButton(self.controls_frame, text="Generate Random BST", command=self.generate_random_tree)
+        self.random_graph_button.grid(row=0, column=0)
+
+        self.clear_button = ctk.CTkButton(self.controls_frame, text="Clear Tree", command=self.clear_graph)
+        self.clear_button.grid(row=0, column=2)
+
+        # Inserting values
+        ctk.CTkLabel(self.controls_frame, text="Value to Insert: (1-99)").grid(row=1, column=0)
+        self.add_node_entry = ctk.CTkEntry(self.controls_frame, width=50)
+        self.add_node_entry.grid(row=1, column=1, sticky="w")
+
+        self.add_node_button = ctk.CTkButton(self.controls_frame, text="Insert", command=lambda: self.add_node(self.add_node_entry.get()))
+        self.add_node_button.grid(row=1, column=1, columnspan=2)
+
+        # Searching for values
+        ctk.CTkLabel(self.controls_frame, text="Value to Search: (1-99)").grid(row=2, column=0)
+        self.find_node_entry = ctk.CTkEntry(self.controls_frame, width=50)
+        self.find_node_entry.grid(row=2, column=1, sticky="w")
+
+        self.search_button = ctk.CTkButton(self.controls_frame, text="Search", command=lambda: self.search_value(self.find_node_entry.get()))
+        self.search_button.grid(row=2, column=1, columnspan=2)
+
+        # Tree Traversals
+        ctk.CTkLabel(self.controls_frame, text="Tree Traversals:").grid(row=4, column=0)
+
+        self.pre_button = ctk.CTkButton(self.controls_frame, width=50, text="Pre-order", command=lambda: self.tree_traversal(None, "pre"))
+        self.pre_button.grid(row=4, column=1, sticky="w", padx=15)
+
+        self.in_button = ctk.CTkButton(self.controls_frame, width=50, text="In-order", command=lambda: self.tree_traversal(None, "in"))
+        self.in_button.grid(row=4, column=1, sticky="e", padx=15)
+
+        self.post_button = ctk.CTkButton(self.controls_frame, width=50, text="Post-order", command=lambda: self.tree_traversal(None, "post"))
+        self.post_button.grid(row=4, column=2, sticky="w", padx=15)
+
+        # Speed control
+        self.speed_frame = ctk.CTkFrame(self.controls_frame, border_width=0)
+        self.speed_frame.grid(row=6, column=0, columnspan=4, padx=10)
+        self.speed_var = ctk.DoubleVar(value=700)  # Speed variable in milliseconds
+        self.speed_label = ctk.CTkLabel(master=self.speed_frame, text="Speed (ms)")
+        self.speed_label.pack(side="left", padx=10)
+
+        self.speed_slider = ctk.CTkSlider(master=self.speed_frame, from_=1000, to=10, variable=self.speed_var)
+        self.speed_slider.pack(side="left", padx=10, fill="x", expand=True)
+
+        # Playback functionality
+        self.playback_holder = ctk.CTkFrame(self.controls_frame, fg_color="transparent", border_width=0)
+        self.playback_holder.grid(row=7, column=0, columnspan=4)
+        self.playback_slider = ctk.CTkSlider(master=self.playback_holder, height=20, border_color="black", command=self.on_slider_move)
+        self.playback_slider.pack(pady=10, side="left")
+        self.playback_slider.configure(state="disabled")
+        self.last_slider_value = None
+
+        self.edit_playback_frame = ctk.CTkFrame(master=self.playback_holder, fg_color="transparent", border_width=0)
+        self.edit_playback_frame.pack(pady=5, padx=5)
+        self.edit_buttons = []
+        # (text, command) for the ◀◀ ◀| ▷ |▶ ▶▶ buttons
+        buttons = [("◀◀", lambda: self.change_slider_value("beginning")),
+                   ("◀|", lambda: self.change_slider_value("decrement")),
+                   ("▷", lambda: self.toggle_pause),
+                   ("|▶", lambda: self.change_slider_value("increment")),
+                   ("▶▶", lambda: self.change_slider_value("end"))]
+        for text, command in buttons:
+            button = ctk.CTkButton(master=self.edit_playback_frame, state="disabled", width=50 if text == "▷" else 40,
+                                   text=text, command=command)
+            button.pack(side="left", padx=3)
+            self.edit_buttons.append(button)
+        self.beginning_button, self.decrement_button, self.stop_button, self.increment_button, self.complete_button = self.edit_buttons
+
+        # Plot canvas for the tree
+        ctk.CTkLabel(self.canvas_frame, text="Binary Search Tree Visualiser", font=("Arial", 26, "bold"), fg_color="transparent").pack(pady=20)
+        self.figure, self.ax = plt.subplots(figsize=(6, 6))
+        self.canvas = FigureCanvasTkAgg(self.figure, self.canvas_frame)
+        self.canvas.get_tk_widget().pack()
+
+        # This is for the log where the messages will be outputted
+        self.message_title = ctk.CTkLabel(self.message_frame, fg_color="transparent", text="LOG", font=("Arial Black", 24, "bold"))
+        self.message_title.pack(pady=20)
+        self.message_label = ctk.CTkLabel(self.message_frame, text="", font=("Arial",20), wraplength=400)
+        self.message_label.pack(expand=True)
+
+        # This is to output the path / visited list
+        self.output_title = ctk.CTkLabel(self.output_frame, fg_color="transparent", text="OUTPUT", font=("Arial Black", 18))
+        self.output_title.pack(pady=10)
+        self.output_label = ctk.CTkLabel(self.output_frame, text="[ ]", font=("Arial",20))
+        self.output_label.pack(pady=10)
+
+    def sync_graph(self):
+        # Mirror the BST into the networkx graph used for drawing
+        self.graph = nx.Graph()
+        self.graph.add_nodes_from(self.bst.inorder())
+        self.graph.add_edges_from(self.bst.edges())
+        self.pos = self.bst.layout()
+        self.node_colours = {node: 'lightblue' for node in self.graph.nodes()}
+
+    def generate_random_tree(self, num_nodes=None):
+        self.cancel_animation()
+        self.bst = bst_steps.random_bst(num_nodes)
+        self.sync_graph()
+        self.output_message("Values inserted in a random order; each value goes left if smaller, right if larger.")
+        self.change_output(f"In-order: {self.bst.inorder()}")
+        self.draw_graph()
+
+    def clear_graph(self):
+        self.cancel_animation()
+        self.bst = bst_steps.BST()
+        self.sync_graph()
+        self.output_message("Tree cleared. Insert a value to create the root.")
+        self.change_output("[ ]")
+        self.draw_graph()
+
+    def parse_value(self, entry_value):
+        # Returns an int in 1-99, or None after showing a message
+        try:
+            if entry_value.strip() == "":
+                return random.randint(1, 99)
+            value = int(entry_value)
+        except ValueError:
+            self.output_message("Please enter a valid whole number")
+            return None
+        if value < 1 or value > 99:
+            self.output_message("Please enter a value in suitable range: 1-99")
+            return None
+        return value
+
+    def play_states(self, states):
+        # Load [colours, message, output] states into the shared playback machinery and start
+        self.reset_animation_variables()
+        self.states[0] = [copy.deepcopy(self.node_colours), "", ""]
+        for state in states:
+            self.states[self.state_index] = state
+            self.state_index += 1
+        self.is_running = True
+        self.set_slider_attributes() # Give data to slider
+        self.run_animation()
+
+    def add_node(self, entry_value):
+        self.cancel_animation()
+
+        if len(self.bst) >= self.MAX_NODES:
+            self.output_message(f"Max number of nodes ({self.MAX_NODES}) reached for the tree")
+            return
+
+        value = self.parse_value(entry_value)
+        if value is None:
+            return
+        if value in self.bst:
+            self.output_message(f"{value} is already in the tree (a BST holds no duplicates).")
+            return
+
+        states = self.bst.insert_steps(value)
+        self.sync_graph()
+        self.play_states(states)
+
+    def search_value(self, entry_value):
+        self.cancel_animation()
+        value = self.parse_value(entry_value)
+        if value is None:
+            return
+        self.play_states(self.bst.search_steps(value))
+
+    def tree_traversal(self, root, type):
+        self.cancel_animation()
+        if len(self.bst) == 0:
+            self.output_message("The tree is empty, so there is nothing to traverse.")
+            return
+        self.play_states(self.bst.traversal_steps(type))
+
+    def delete_node(self, entry_value):
+        self.output_message("Deleting is not supported in BST mode; use Clear Tree.")
+
+
 def main(master, window):
     window.geometry("1360x1070")
     window.minsize(1360, 1070)
@@ -853,6 +1064,7 @@ def main(master, window):
     # Create tabs
     tab1 = tabview.add("Basic Tree")
     tab2 = tabview.add("Binary Tree")
+    tab3 = tabview.add("Binary Search Tree")
 
     vis1 = TreeVisualiser(tab1)
     vis1.pack(fill="both", expand=True)
@@ -871,3 +1083,9 @@ def main(master, window):
     vis2.setVis()
     # Generate an initial random graph
     vis2.generate_random_tree()
+
+    vis3 = BinarySearchTreeVisualiser(tab3)
+    vis3.pack(fill="both", expand=True)
+    vis3.reset_animation_variables()
+    vis3.setVis()
+    vis3.generate_random_tree()
