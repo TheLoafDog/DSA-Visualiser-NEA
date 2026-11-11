@@ -28,3 +28,7 @@
 ## 2026-11-11 — sorting step functions
 - New `sorting_steps.py` with pure `bubble_sort_steps`, `insertion_sort_steps`, `merge_sort_steps` (input → list of `[data, colours, text]` states, no UI). The three `sorting_vis` frames now call them via a small `parentFrame.load_states` helper; the state sequences are identical to before (checked old vs new frames on 35 datasets under xvfb).
 - Added `tests/test_sorting_steps.py` (final state sorted, states well-formed, input untouched, step counts). Merged by Claude (autonomous run).
+
+## 2026-11-11 — searching step functions
+- New `searching_steps.py` with pure `linear_search_steps` and `binary_search_steps` (data + target → list of `[colours, text]` states, no UI). `searching_vis` frames now return these from `search_step`; `parentFrame.start_searching_simulation` loads them and starts the animation. State sequences identical to before (checked old vs new frames on 216 data/target cases under xvfb).
+- Small fix: a non-integer search value now shows the "Please enter an integer" message and stops, instead of continuing (which raised a TypeError in the binary search). Added `tests/test_searching_steps.py`. Merged by Claude (autonomous run).
