@@ -13,6 +13,7 @@ Colour meanings (shared with sorting_vis):
   blue   - element just inserted (insertion sort) / subarray being split (merge sort)
   purple/cyan - left/right subarrays about to be merged (merge sort)
   yellow - position an element is being placed into (merge sort)
+  purple - pivot (quick sort); cyan - elements found to be <= the pivot (quick sort)
 """
 import copy
 
@@ -178,8 +179,76 @@ def merge_sort_steps(data):
     return states
 
 
+def quick_sort_steps(data):
+    """Quick sort (Lomuto partition, last element as pivot).
+
+    Each partition pass compares every element of the subarray with the
+    pivot, swapping small elements into a growing "less than or equal to the
+    pivot" region, then swaps the pivot into its final place. Pivots that
+    have been placed stay green.
+    """
+    arr = list(data)
+    states = []
+    n = len(arr)
+    settled = set()  # Indexes whose final value is known (placed pivots / 1-element subarrays)
+
+    def colours(low, high, pivot=None, current=None, boundary=None):
+        colour_array = ['red'] * n
+        for i in range(low, high + 1):
+            colour_array[i] = 'blue'          # Subarray being partitioned
+        if boundary is not None:
+            for i in range(low, boundary + 1):
+                colour_array[i] = 'cyan'      # Elements already found to be <= pivot
+        if current is not None:
+            colour_array[current] = 'orange'  # Element being compared with the pivot
+        if pivot is not None:
+            colour_array[pivot] = 'purple'    # The pivot
+        for i in settled:
+            colour_array[i] = 'green'
+        return colour_array
+
+    def quick_sort(low, high):
+        if low > high:
+            return
+        if low == high:
+            settled.add(low)
+            states.append([copy.deepcopy(arr), colours(low, high),
+                           f"Subarray [{low}:{high}] has one element ({arr[low]}), so it is already in place."])
+            return
+
+        pivot = arr[high]
+        states.append([copy.deepcopy(arr), colours(low, high, pivot=high),
+                       f"Partitioning subarray [{low}:{high}]: {arr[low:high+1]}\n"
+                       f"Pivot = last element, {pivot} (index {high})."])
+
+        i = low - 1  # Last index of the "<= pivot" region
+        for j in range(low, high):
+            if arr[j] <= pivot:
+                i += 1
+                arr[i], arr[j] = arr[j], arr[i]
+                text = (f"{arr[i]} <= pivot {pivot}, so swap it into the 'smaller' region\n"
+                        f"(index {j} -> index {i}).")
+            else:
+                text = f"{arr[j]} > pivot {pivot}, so leave it where it is."
+            states.append([copy.deepcopy(arr), colours(low, high, pivot=high, current=j, boundary=i), text])
+
+        arr[i + 1], arr[high] = arr[high], arr[i + 1]
+        settled.add(i + 1)
+        states.append([copy.deepcopy(arr), colours(low, high, boundary=i),
+                       f"Swap the pivot {pivot} into index {i + 1}: everything to its left is <= {pivot} "
+                       f"and everything to its right is > {pivot}.\nThe pivot is now in its final position."])
+
+        quick_sort(low, i)
+        quick_sort(i + 2, high)
+
+    quick_sort(0, n - 1)
+    states.append([copy.deepcopy(arr), ['green'] * n, "Data has been sorted with quick sort."])
+    return states
+
+
 STEP_FUNCTIONS = {
     "Bubble Sort": bubble_sort_steps,
     "Insertion Sort": insertion_sort_steps,
     "Merge Sort": merge_sort_steps,
+    "Quick Sort": quick_sort_steps,
 }

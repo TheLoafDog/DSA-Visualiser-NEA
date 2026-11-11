@@ -15,7 +15,7 @@ Up to 4 items per Claude session, top to bottom. Items tagged [needs Brandon] ar
 - [x] Reduce duplication between `sorting_vis.parentFrame` and `searching_vis.parentFrame` (shared bar-chart/playback base class).
 
 ## Phase 2 — New implementations
-- [ ] Add quick sort to the sorting visualiser dropdown (using the step-generation pattern from Phase 1).
+- [x] Add quick sort to the sorting visualiser dropdown (using the step-generation pattern from Phase 1).
 - [ ] Add selection sort to the sorting visualiser.
 - [ ] Add quiz questions for under-covered topics: Queue, Searching, Tree (aim ~6 each across difficulties 1–3).
 - [ ] Add a binary search tree mode (insert/search with comparisons highlighted) to the binary tree visualiser.
