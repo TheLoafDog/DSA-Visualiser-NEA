@@ -1,12 +1,14 @@
-# Parent frame (inherits the shared bar-chart/playback base class in playback_frame.py):  Lines 18 - 93
-# Bubble Sort Class (inheritance off parent frame):     Lines 95 - 105
-# Insertion Sort (inheritance off parent frame):        Lines 107 - 117
-# Merge Sort in-place (inheritance off parent frame):   Lines 119 - 129
+# Parent frame (inherits the shared bar-chart/playback base class in playback_frame.py):  Lines 21 - 92
+# Bubble Sort Class (inheritance off parent frame):     Lines 94 - 104
+# Insertion Sort (inheritance off parent frame):        Lines 106 - 116
+# Merge Sort in-place (inheritance off parent frame):   Lines 118 - 128
+# Quick Sort (inheritance off parent frame):            Lines 130 - 140
 
 # The step generation (pure, no UI) now lives in sorting_steps.py:
 # Bubble Sort steps:    sorting_steps.bubble_sort_steps
 # Insertion Sort steps: sorting_steps.insertion_sort_steps
 # Merge Sort steps:     sorting_steps.merge_sort_steps
+# Quick Sort steps:     sorting_steps.quick_sort_steps
 
 import customtkinter as ctk
 import random
@@ -33,18 +35,14 @@ class parentFrame(PlaybackFrame):
         self.start_button.pack(side="left", padx=10, pady=10)
 
     def build_header_widgets(self): # Packed between the title and the canvas
-        options = ["Bubble Sort", "Insertion Sort", "Merge Sort"]
+        options = list(sorting_steps.STEP_FUNCTIONS) # "Bubble Sort", "Insertion Sort", "Merge Sort", "Quick Sort"
         self.select_sort_type = ctk.CTkOptionMenu(master=self, values=options, command=self.on_select)
         self.select_sort_type.pack(pady=5)
 
     def on_select(self, selected_value):
-        # Create the new frame first
-        if selected_value == "Bubble Sort":
-            new_frame = bubbleFrame(master=self.master, speed_var=self.speed_var, message_box=self.message_box, vis_num=self.vis_num, control_frame=self.control_frame)
-        elif selected_value == "Insertion Sort":
-            new_frame = insertionFrame(master=self.master, speed_var=self.speed_var, message_box=self.message_box, vis_num=self.vis_num, control_frame=self.control_frame)
-        else:
-            new_frame = mergeFrame(master=self.master, speed_var=self.speed_var, message_box=self.message_box, vis_num=self.vis_num, control_frame=self.control_frame)
+        # Create the new frame first (FRAME_CLASSES maps each dropdown name to its frame class)
+        frame_class = FRAME_CLASSES[selected_value]
+        new_frame = frame_class(master=self.master, speed_var=self.speed_var, message_box=self.message_box, vis_num=self.vis_num, control_frame=self.control_frame)
 
         new_frame.select_sort_type.set(selected_value) # Show the selected option in the option menu
         self.message_box.title_label.configure(text=f"{selected_value} Log")
@@ -128,7 +126,27 @@ class mergeFrame(parentFrame):
     def sort_step(self):
         # The step logic is pure (no UI) in sorting_steps.merge_sort_steps; see tests/test_sorting_steps.py
         return sorting_steps.merge_sort_steps(self.data)
-    
+
+class quickFrame(parentFrame):
+    def __init__(self, master, speed_var, message_box, vis_num, control_frame):
+        super().__init__(master, speed_var, message_box=message_box, vis_num=vis_num, control_frame=control_frame)
+
+        # Tailor widgets to the sort
+        self.title.configure(text=f"Visualiser {self.vis_num}: Quick Sort")
+        self.start_button.configure(text="Start Quick Sort")
+
+    def sort_step(self):
+        # The step logic is pure (no UI) in sorting_steps.quick_sort_steps; see tests/test_sorting_steps.py
+        return sorting_steps.quick_sort_steps(self.data)
+
+# Dropdown name -> frame class (same names as sorting_steps.STEP_FUNCTIONS)
+FRAME_CLASSES = {
+    "Bubble Sort": bubbleFrame,
+    "Insertion Sort": insertionFrame,
+    "Merge Sort": mergeFrame,
+    "Quick Sort": quickFrame,
+}
+
 class controlFrame(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)

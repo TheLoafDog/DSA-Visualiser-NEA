@@ -9,6 +9,7 @@ ALGORITHMS = [
     sorting_steps.bubble_sort_steps,
     sorting_steps.insertion_sort_steps,
     sorting_steps.merge_sort_steps,
+    sorting_steps.quick_sort_steps,
 ]
 
 random.seed(2024)
@@ -39,10 +40,11 @@ def test_states_are_well_formed(algorithm, data):
         assert isinstance(text, str) and text
 
 
-@pytest.mark.parametrize("algorithm", ALGORITHMS[:2], ids=lambda f: f.__name__)
+@pytest.mark.parametrize("algorithm", [sorting_steps.bubble_sort_steps, sorting_steps.insertion_sort_steps,
+                                       sorting_steps.quick_sort_steps], ids=lambda f: f.__name__)
 @pytest.mark.parametrize("data", DATASETS, ids=[f"d{i}" for i in range(len(DATASETS))])
 def test_swap_based_sorts_keep_every_step_a_permutation(algorithm, data):
-    # Bubble and insertion sort only ever swap/shift, so every snapshot holds the
+    # Bubble, insertion and quick sort only ever swap/shift, so every snapshot holds the
     # same multiset. (Merge sort writes the merged values back over the working
     # array while they are held in temporary halves, so its snapshots don't.)
     for snapshot, _, _ in algorithm(data):
@@ -75,4 +77,29 @@ def test_insertion_sort_on_sorted_input_takes_no_shifts():
 
 
 def test_step_functions_table_matches_dropdown_names():
-    assert list(sorting_steps.STEP_FUNCTIONS) == ["Bubble Sort", "Insertion Sort", "Merge Sort"]
+    assert list(sorting_steps.STEP_FUNCTIONS) == ["Bubble Sort", "Insertion Sort", "Merge Sort", "Quick Sort"]
+
+
+def test_frame_classes_match_step_functions():
+    import sorting_vis
+    assert list(sorting_vis.FRAME_CLASSES) == list(sorting_steps.STEP_FUNCTIONS)
+
+
+def test_quick_sort_places_each_pivot_in_final_position():
+    data = [7, 2, 9, 4, 1, 8]
+    states = sorting_steps.quick_sort_steps(data)
+    final = sorted(data)
+    for snapshot, colours, _ in states:
+        # Anything marked green (a placed pivot / single element) is already in its sorted position
+        for i, colour in enumerate(colours):
+            if colour == 'green':
+                assert snapshot[i] == final[i]
+    assert any("Pivot = last element" in text for _, _, text in states)
+
+
+def test_quick_sort_step_count_on_reverse_input():
+    # Reverse-sorted input is the worst case: every partition compares all remaining elements
+    n = 5
+    states = sorting_steps.quick_sort_steps(list(range(n, 0, -1)))
+    comparisons = sum(1 for _, _, t in states if "pivot" in t and ("swap it" in t or "leave it" in t))
+    assert comparisons == n * (n - 1) // 2

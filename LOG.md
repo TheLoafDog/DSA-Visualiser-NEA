@@ -40,3 +40,7 @@
 ## 2026-11-11 — shared playback base class
 - New `playback_frame.py` with `PlaybackFrame`: the title, bar-chart canvas, playback slider + ◀◀ ◀| ▷ |▶ ▶▶ buttons and all the step/pause/restart/skip logic that `sorting_vis.parentFrame` and `searching_vis.parentFrame` each had a copy of. Both now inherit from it (sorting adds its dropdown via `build_header_widgets` and index labels; each defines `unpack_state` for its state shape). ~300 duplicated lines removed.
 - Verified the drawn bars and widget states are identical for a scripted playback session before/after. Two small fixes: the sorting slider now shows the message of the step it points at (it showed the previous step's), and starting a new sort clears the previous run's states. Added `tests/test_playback_frame.py` (GUI, skipped without a display). Merged by Claude (autonomous run).
+
+## 2026-11-11 — quick sort
+- New `sorting_steps.quick_sort_steps` (Lomuto partition, last element as pivot; purple pivot, orange element being compared, cyan "<= pivot" region, green for placed pivots) and a `quickFrame` in `sorting_vis`. The dropdown now lists Bubble/Insertion/Merge/Quick Sort, driven by a `FRAME_CLASSES` table instead of an if/elif chain.
+- Existing tests now cover quick sort too, plus tests that green bars are always in their final position and the worst-case comparison count. Merged by Claude (autonomous run).
