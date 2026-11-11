@@ -30,10 +30,14 @@ There is no test suite or linter yet (see ROADMAP.md). Once `tests/` exists, als
 
 ## Rules for Claude sessions
 - Read the latest LOG.md entry and ROADMAP.md first. Don't re-explore the whole repo.
-- Do ONE unchecked roadmap item per session — the first one not tagged [needs Brandon]. Skip [needs Brandon] items.
+- Do up to 4 roadmap items per session, top to bottom, one branch + PR each; skip items tagged [needs Brandon].
 - Work on a branch `claude/<short-task-name>`; never commit to main.
 - Keep diffs small and reviewable. Preserve existing behaviour unless the item says otherwise.
 - Add or keep tests where practical.
 - Never invent facts about Brandon and never add personal data.
-- Every PR is left open for Brandon to review. Claude does not merge.
-- At the end: tick the item in ROADMAP.md and append a 3–5 line dated entry to LOG.md, in the same branch.
+- Autonomous merge policy: Claude merges its own PR (squash, via `gh api -X PUT .../pulls/<n>/merge -f merge_method=squash`)
+  once the checks above pass and behaviour is preserved. Leave a PR open for Brandon, saying why in the body, when checks
+  fail and can't be fixed, it rewrites or deletes a large part of the app, it touches licence/credits/personal or
+  authorship info, it adds a paid or external service, or Claude is unsure it's correct. Never push to main directly,
+  never force-push main, never rewrite history. Delete the remote `claude/` branch after merging.
+- For each item: tick it in ROADMAP.md and append a 2–4 line dated entry to LOG.md (say merged or left open), in the same branch.

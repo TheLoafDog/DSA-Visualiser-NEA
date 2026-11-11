@@ -1,6 +1,6 @@
 # Roadmap
 
-One item per Claude session, top to bottom. Items tagged [needs Brandon] are skipped by unattended runs.
+Up to 4 items per Claude session, top to bottom. Items tagged [needs Brandon] are skipped by unattended runs.
 
 ## Phase 1 — Structure and tooling
 - [ ] Add a `.gitignore` (Python caches, venvs, OS files) and remove the committed `__pycache__/` folder from git.
