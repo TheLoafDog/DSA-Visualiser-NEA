@@ -1,14 +1,17 @@
-# Bubble Sort Class (inheritance off parent frame):     Lines 312 - 371
-# Insertion Sort (inheritance off parent frame):        Lines 373 - 434
-# Merge Sort in-place (inheritance off parent frame):   Lines 436 - 600
+# Bubble Sort Class (inheritance off parent frame):     Lines 326 - 347
+# Insertion Sort (inheritance off parent frame):        Lines 349 - 369
+# Merge Sort in-place (inheritance off parent frame):   Lines 371 - 388
 
-# Bubble Sort steps:    Lines 324 - 371
-# Insertion Sort steps: Lines 385 - 434
-# Merge Sort steps:     Lines 444 - 600
+# The step generation (pure, no UI) now lives in sorting_steps.py:
+# Bubble Sort steps:    sorting_steps.bubble_sort_steps
+# Insertion Sort steps: sorting_steps.insertion_sort_steps
+# Merge Sort steps:     sorting_steps.merge_sort_steps
 
 import copy
 import customtkinter as ctk
 import random
+
+import sorting_steps
 
 # Global Variables
 
@@ -153,6 +156,12 @@ class parentFrame(ctk.CTkFrame):
 
     def sort_step(self): # This is used to simulate the steps of the animation and add it to the states array.
         pass
+
+    def load_states(self, states): # Stores generated [data, colours, text] steps into self.states and finishes self.data
+        for state in states:
+            self.states[self.state_index] = state
+            self.state_index += 1
+        self.data = list(states[-1][0]) # The final (sorted) data
 
     def start_sorting_simulation(self, **kwargs):
         self.cancel_sorting()  # Stop any ongoing animations before starting a new one
@@ -327,53 +336,15 @@ class bubbleFrame(parentFrame):
         self.step_j = 0
 
     def sort_step(self):
-        if self.step_i < len(self.data) - 1:
-            # Highlight the two elements being compared in green, others in red
-            colour_array = []
-            
-            if self.step_j < len(self.data) - self.step_i - 1:
-                text = "Leave both values since the left one IS NOT LARGER in this comparison.\n" + str(self.data[self.step_j + 1]) + " > " + str(self.data[self.step_j])
-                if self.data[self.step_j] > self.data[self.step_j + 1]:
-                    self.data[self.step_j], self.data[self.step_j + 1] = self.data[self.step_j + 1], self.data[self.step_j]
-                    text = "Switch both values since the left one IS LARGER in this comparison.\n" + str(self.data[self.step_j]) + " > " + str(self.data[self.step_j + 1])
-                
-                # Loop through each element in data to assign colours
-                for i in range(len(self.data)-self.step_i):
-                    # If this element is currently being compared, colour it green
-                    if i == self.step_j or i == self.step_j + 1:
-                        colour_array.append('orange')
-                    else:
-                        # For all other elements, colour them red
-                        colour_array.append('red')
-                
-                for i in range(len(self.data)-self.step_i, len(self.data)):
-                    colour_array.append('green')
+        # The step logic is pure (no UI) in sorting_steps.bubble_sort_steps; see tests/test_sorting_steps.py
+        self.load_states(sorting_steps.bubble_sort_steps(self.data))
 
-                # Instead of drawing the array now, it just stores the variables as a state
-                self.states[self.state_index] = [copy.deepcopy(self.data), copy.deepcopy(colour_array), text]
-                self.state_index += 1
-                self.step_j += 1
-                
-                self.sort_step()
-            else:
-                self.step_i += 1
-                self.step_j = 0
-                self.sort_step()
-                
-        else: # Simulation ends
-            colour_array = []
-            colour_array = ['green'] * len(self.data)
-            
-            # Instead of drawing the array now, it just stores the variables as a state
-            self.states[self.state_index] = [copy.deepcopy(self.data), copy.deepcopy(colour_array), "Data has been sorted with bubble sort."]
-            self.state_index += 1
-            
-            # Establish variables for the start of the animation
-            self.sort_active = True
-            
-            # Run methods to start the actual animation
-            self.set_slider_attributes()
-            self.run_animation()
+        # Establish variables for the start of the animation
+        self.sort_active = True
+
+        # Run methods to start the actual animation
+        self.set_slider_attributes()
+        self.run_animation()
 
 class insertionFrame(parentFrame):
     def __init__(self, master, speed_var, message_box, vis_num, control_frame):
@@ -386,57 +357,16 @@ class insertionFrame(parentFrame):
         # Step variables for insertion sort
         self.index = 1
 
-    # Override sort_step for insertion sort logic with highlighted insertion
     def sort_step(self):
-        if self.index < len(self.data):
-            key = self.data[self.index]
-            j = self.index - 1
+        # The step logic is pure (no UI) in sorting_steps.insertion_sort_steps; see tests/test_sorting_steps.py
+        self.load_states(sorting_steps.insertion_sort_steps(self.data))
 
-            # Shift elements until the correct spot for `key` is found
-            while j >= 0 and self.data[j] > key:
-                # Create colour array with the latest inserted element as orange
-                colour_array = [
-                    'green' if i <= self.index else 'red' for i in range(len(self.data))
-                ]
-                colour_array[j + 1] = 'orange'  # Highlight the inserted bar
+        # Establish variables for the start of the animation
+        self.sort_active = True
 
-                # Add current information to state and increment state_index
-                self.states[self.state_index] = [copy.deepcopy(self.data), copy.deepcopy(colour_array), f"Shift elements until the correct spot for the {key} is found"]
-                self.state_index += 1
-                
-                self.data[j + 1] = self.data[j]
-                self.data[j] = key
-                j -= 1
-
-            # Insert the key at the correct position
-            self.data[j + 1] = key
-            text = f"{key} was inserted in front of the value: {self.data[j]}.\nSince, {key} > {self.data[j]}"
-
-            # Create colour array with the latest inserted element as orange
-            colour_array = [
-                'green' if i <= self.index else 'red' for i in range(len(self.data))
-            ]
-            colour_array[j + 1] = 'blue'  # Highlight the inserted bar
-
-            # Add current information to state and increment state_index
-            self.states[self.state_index] = [copy.deepcopy(self.data), copy.deepcopy(colour_array), text]
-            self.state_index += 1
-
-            #  Recursion for next step and increment index for the sort
-            self.index += 1
-            self.sort_step()
-        else:
-            # Colour the final sorted array green
-            colour_array = ['green' for _ in range(len(self.data))]
-            self.states[self.state_index] = [copy.deepcopy(self.data), copy.deepcopy(colour_array), "Data has been sorted with insertion sort."]
-            self.state_index += 1
-            
-            # Establish variables for the start of the animation
-            self.sort_active = True
-            
-            # Run methods to start the actual animation
-            self.set_slider_attributes()
-            self.run_animation()
+        # Run methods to start the actual animation
+        self.set_slider_attributes()
+        self.run_animation()
 
 class mergeFrame(parentFrame):
     def __init__(self, master, speed_var, message_box, vis_num, control_frame):
@@ -447,162 +377,15 @@ class mergeFrame(parentFrame):
         self.start_button.configure(text="Start Merge Sort")
 
     def sort_step(self):
-        # Two parts to the merge sort: splitting (divide) and merging (conquer)
-        # A divide and conquer algorithm
+        # The step logic is pure (no UI) in sorting_steps.merge_sort_steps; see tests/test_sorting_steps.py
+        self.load_states(sorting_steps.merge_sort_steps(self.data))
 
-        # Start the merge sort and store all steps
-        self.merge_sort(self.data, 0, len(self.data) - 1)
-        
-        # Colour the final sorted array green
-        colour_array = ['green'] * len(self.data)
-        self.states[self.state_index] = [copy.deepcopy(self.data), colour_array, "Data has been sorted with merge sort."]
-        self.state_index += 1
-        
         # Establish variables for the start of the animation
         self.sort_active = True
-        
+
         # Run methods to start the actual animation
         self.set_slider_attributes()
         self.run_animation()
-    
-    def merge_sort(self, arr, left, right): # This splits ups the data into subarrays
-        if left < right: # Check base case for recursion, in case the there is no data left to be sorted
-            # Find the mid point
-            mid = (left + right) // 2
-            
-            # Visualise the splitting phase
-            colour_array = ['red'] * len(arr)
-            
-            # Highlight the current subarray being split
-            for i in range(left, right + 1):
-                colour_array[i] = 'blue'
-            
-            text = f"Splitting array [{left}:{right}]: {arr[left:right+1]}\n"
-            text += f"Into left half [{left}:{mid}]: {arr[left:mid+1]}\n"
-            text += f"And right half [{mid+1}:{right}]: {arr[mid+1:right+1]}"
-            
-            self.states[self.state_index] = [copy.deepcopy(arr), copy.deepcopy(colour_array), text]
-            self.state_index += 1
-            
-            # Recursively sort the first and second halves
-            self.merge_sort(arr, left, mid)
-            self.merge_sort(arr, mid + 1, right)
-            
-            # Visualise before merging
-            colour_array = ['red'] * len(arr)
-            for i in range(left, mid + 1):
-                colour_array[i] = 'purple'  # Left subarray
-            for i in range(mid + 1, right + 1):
-                colour_array[i] = 'cyan'    # Right subarray
-                
-            text = f"About to merge two sorted subarrays:\n"
-            text += f"Left subarray [{left}:{mid}]: {arr[left:mid+1]}\n"
-            text += f"Right subarray [{mid+1}:{right}]: {arr[mid+1:right+1]}"
-            
-            self.states[self.state_index] = [copy.deepcopy(arr), copy.deepcopy(colour_array), text]
-            self.state_index += 1
-            
-            # Merge the sorted halves
-            self.merge(arr, left, mid, right)
-    
-    def merge(self, arr, left, mid, right): # This compares and merges the subarrays into sorted ones
-        
-        L = arr[left:mid + 1] # Left subarray
-        R = arr[mid + 1:right + 1] # Right subarray
-        
-        i = 0 # Initial index of first subarray
-        j = 0 # Initial index of second subarray
-        k = left # Initial index of merged subarray
-        
-        # Merge the temp arrays back into arr[left..right]
-        while i < len(L) and j < len(R):
-            # For each step, reset the colour of the array
-            colour_array = ['red'] * len(arr)
-            
-            # Highlight elements being compared
-            colour_array[left + i] = 'orange' # Element from left subarray
-            colour_array[mid + 1 + j] = 'orange' # Element from right subarray
-            
-            text = f"Comparing L[{i}]={L[i]} with R[{j}]={R[j]}"
-            
-            if L[i] <= R[j]:
-                # Element from left subarray is smaller
-                colour_array[k] = 'yellow'  # Position where element will be placed
-                text += f"\nPlacing L[{i}]={L[i]} at position {k}, since L[{i}]={L[i]} ≤ R[{j}]={R[j]}"
-                
-                arr[k] = L[i] # Place current left subarray value into original array since it is less than the value in the right subarray
-                
-                # Store this state
-                self.states[self.state_index] = [copy.deepcopy(arr), colour_array, text]
-                self.state_index += 1
-                
-                i += 1
-            else:
-                # Element from right subarray is smaller
-                colour_array[k] = 'yellow'  # Position where element will be placed
-                text += f"\nPlacing R[{j}]={R[j]} at position {k} since, L[{i}]={L[i]} > R[{j}]={R[j]}"
-                
-                arr[k] = R[j] # Place current right subarray value into original array since it is less than the value in the left subarray
-                
-                # Store this state
-                self.states[self.state_index] = [copy.deepcopy(arr), colour_array, text]
-                self.state_index += 1
-                
-                j += 1
-            
-            k += 1
-        
-        # If any elements remain in the left subarray, they are copied
-        while i < len(L):
-            current_array = copy.deepcopy(arr)
-            colour_array = ['red'] * len(arr)
-            colour_array[left + i] = 'orange'  # Highlight the element being placed
-            colour_array[k] = 'yellow'         # Position where it's being placed
-            
-            text = f"Copying remaining element L[{i}]={L[i]} to position {k}"
-            
-            # Update current array copy for visualization
-            current_array[k] = L[i]
-            
-            # Store this state
-            self.states[self.state_index] = [current_array, colour_array, text]
-            self.state_index += 1
-            
-            # Actually update the original array
-            arr[k] = L[i]
-            i += 1
-            k += 1
-        
-        # If any elements remain in the right subarray, they are copied
-        while j < len(R):
-            current_array = copy.deepcopy(arr)
-            colour_array = ['red'] * len(arr)
-            colour_array[mid + 1 + j] = 'orange'  # Highlight the element being placed
-            colour_array[k] = 'yellow'            # Position where it's being placed
-            
-            text = f"Copying remaining element R[{j}]={R[j]} to position {k}"
-            
-            # Update current array copy for visualization
-            current_array[k] = R[j]
-            
-            # Store this state
-            self.states[self.state_index] = [current_array, colour_array, text]
-            self.state_index += 1
-            
-            # Actually update the original array
-            arr[k] = R[j]
-            j += 1
-            k += 1
-        
-        # Show the completed merge
-        colour_array = ['red'] * len(arr)
-        for i in range(left, right + 1):
-            colour_array[i] = 'green'  # Successfully merged subarray
-        
-        text = f"Merged subarray [{left}:{right}]: {arr[left:right+1]}"
-        
-        self.states[self.state_index] = [copy.deepcopy(arr), copy.deepcopy(colour_array), text]
-        self.state_index += 1
     
 class controlFrame(ctk.CTkFrame):
     def __init__(self, master):

@@ -24,3 +24,7 @@
 ## 2026-11-11 — shared hash module
 - New `dsa_hash.py` (`hash_index`, `place_index`, `retrieve`); `Main.hashDataRetrieve` and both functions in the generator script now delegate to it, removing the duplicated hash code.
 - Verified the regenerated database is byte-identical to the committed one (modulo CRLF line endings; the committed .txt was not touched). Added `tests/test_dsa_hash.py`. Merged by Claude (autonomous run).
+
+## 2026-11-11 — sorting step functions
+- New `sorting_steps.py` with pure `bubble_sort_steps`, `insertion_sort_steps`, `merge_sort_steps` (input → list of `[data, colours, text]` states, no UI). The three `sorting_vis` frames now call them via a small `parentFrame.load_states` helper; the state sequences are identical to before (checked old vs new frames on 35 datasets under xvfb).
+- Added `tests/test_sorting_steps.py` (final state sorted, states well-formed, input untouched, step counts). Merged by Claude (autonomous run).
