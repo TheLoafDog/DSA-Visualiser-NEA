@@ -12,3 +12,7 @@
 ## 2026-11-11 — requirements.txt + README
 - Added requirements.txt (customtkinter, networkx, matplotlib, pillow) and a README "How to run" with install steps and the tkinter note.
 - Docs only. Merged by Claude (interactive session with Brandon).
+
+## 2026-11-11 — pytest harness
+- Added `tests/` with a conftest (repo-root cwd + `display` fixture that skips without a display), a headless smoke test for `Main.App`, and tests that `hashDataRetrieve` returns the right entry for every name in `DSAs_array`.
+- CLAUDE.md checks now run pytest under xvfb (and note `apt-get install python3-tk` for the sandbox). Merged by Claude (autonomous run).

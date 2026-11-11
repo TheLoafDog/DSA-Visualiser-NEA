@@ -21,12 +21,14 @@ tree, sorting, searching).
 pip install customtkinter networkx matplotlib pillow   # needs a Python build with tkinter
 python Main.py
 ```
-Checks (run all before opening a PR; in the cloud sandbox use `python3.12`, which has tkinter):
+Checks (run all before opening a PR; in the cloud sandbox use `python3.12` — if `import tkinter` fails there,
+`apt-get install -y python3-tk` first, then `python3.12 -m pip install -r requirements.txt pytest --break-system-packages`):
 ```
 python3.12 -m py_compile *.py
-xvfb-run -a python3.12 -c "import Main; a=Main.App(); a.update(); a.after(1500,a.destroy); a.mainloop(); print('SMOKE OK')"
+xvfb-run -a python3.12 -m pytest -q
 ```
-There is no test suite or linter yet (see ROADMAP.md). Once `tests/` exists, also run `python3.12 -m pytest -q`.
+Tests live in `tests/` (pytest). `tests/conftest.py` chdirs to the repo root and provides a `display` fixture that
+skips GUI tests when no display is available, so `pytest` also works without xvfb (GUI tests skip). There is no linter yet.
 
 ## Rules for Claude sessions
 - Read the latest LOG.md entry and ROADMAP.md first. Don't re-explore the whole repo.
