@@ -20,3 +20,7 @@
 ## 2026-11-11 — quiz pool test
 - Added `tests/test_quiz_pool.py`: every answer is one of its options, options distinct, difficulty 1–3, topics are known DSA names, question texts unique.
 - All 61 questions already pass, so no questions needed fixing. Noted: the pool has no "Searching" questions (Phase 2 item covers this). Merged by Claude (autonomous run).
+
+## 2026-11-11 — shared hash module
+- New `dsa_hash.py` (`hash_index`, `place_index`, `retrieve`); `Main.hashDataRetrieve` and both functions in the generator script now delegate to it, removing the duplicated hash code.
+- Verified the regenerated database is byte-identical to the committed one (modulo CRLF line endings; the committed .txt was not touched). Added `tests/test_dsa_hash.py`. Merged by Claude (autonomous run).
