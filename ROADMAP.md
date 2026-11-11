@@ -18,7 +18,7 @@ Up to 4 items per Claude session, top to bottom. Items tagged [needs Brandon] ar
 - [x] Add quick sort to the sorting visualiser dropdown (using the step-generation pattern from Phase 1).
 - [x] Add selection sort to the sorting visualiser.
 - [x] Add quiz questions for under-covered topics: Queue, Searching, Tree (aim ~6 each across difficulties 1–3).
-- [ ] Add a binary search tree mode (insert/search with comparisons highlighted) to the binary tree visualiser.
+- [x] Add a binary search tree mode (insert/search with comparisons highlighted) to the binary tree visualiser.
 - [ ] Add Dijkstra's shortest path to the graph visualiser (weighted graphs), with an output of distances.
 - [ ] Add a hash table visualiser (insert/search with linear probing), plus its revision-database entry and menu wiring.
 - [ ] Add quiz questions and revision content for the new algorithms above (quick/selection sort, BST, Dijkstra, hash table).
