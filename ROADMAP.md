@@ -3,7 +3,7 @@
 Up to 4 items per Claude session, top to bottom. Items tagged [needs Brandon] are skipped by unattended runs.
 
 ## Phase 1 — Structure and tooling
-- [ ] Add a `.gitignore` (Python caches, venvs, OS files) and remove the committed `__pycache__/` folder from git.
+- [x] Add a `.gitignore` (Python caches, venvs, OS files) and remove the committed `__pycache__/` folder from git.
 - [ ] Add `requirements.txt` and expand README "How to run" with the install command and a note that Python needs tkinter.
 - [ ] Add a `tests/` harness with pytest: a headless smoke test that builds `Main.App` (skips if no display), and a test that `hashDataRetrieve` returns the right entry for every name in `DSAs_array`.
 - [ ] Add a test that validates the quiz pool: every `answer_position` is one of its `options`, difficulty is 1–3, every topic is a known DSA name; fix any bad questions it finds.
