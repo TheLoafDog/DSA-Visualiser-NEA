@@ -6,7 +6,7 @@ Up to 4 items per Claude session, top to bottom. Items tagged [needs Brandon] ar
 - [x] Add a `.gitignore` (Python caches, venvs, OS files) and remove the committed `__pycache__/` folder from git.
 - [x] Add `requirements.txt` and expand README "How to run" with the install command and a note that Python needs tkinter.
 - [x] Add a `tests/` harness with pytest: a headless smoke test that builds `Main.App` (skips if no display), and a test that `hashDataRetrieve` returns the right entry for every name in `DSAs_array`.
-- [ ] Add a test that validates the quiz pool: every `answer_position` is one of its `options`, difficulty is 1–3, every topic is a known DSA name; fix any bad questions it finds.
+- [x] Add a test that validates the quiz pool: every `answer_position` is one of its `options`, difficulty is 1–3, every topic is a known DSA name; fix any bad questions it finds.
 - [ ] Move the hash function into one shared module used by both `Main.py` and the database generator script, removing the duplicate (keep behaviour and the generated file identical).
 - [ ] [needs Brandon] Rename `making and testing hash with the database for dsa types.py` / `DSA Types Database.txt` to space-free names (may affect references in the NEA write-up).
 - [ ] Pull the pure step-generation logic for bubble/insertion/merge sort out of `sorting_vis.py` into functions (no UI), with unit tests that the final state is sorted.
