@@ -16,3 +16,7 @@
 ## 2026-11-11 — pytest harness
 - Added `tests/` with a conftest (repo-root cwd + `display` fixture that skips without a display), a headless smoke test for `Main.App`, and tests that `hashDataRetrieve` returns the right entry for every name in `DSAs_array`.
 - CLAUDE.md checks now run pytest under xvfb (and note `apt-get install python3-tk` for the sandbox). Merged by Claude (autonomous run).
+
+## 2026-11-11 — quiz pool test
+- Added `tests/test_quiz_pool.py`: every answer is one of its options, options distinct, difficulty 1–3, topics are known DSA names, question texts unique.
+- All 61 questions already pass, so no questions needed fixing. Noted: the pool has no "Searching" questions (Phase 2 item covers this). Merged by Claude (autonomous run).
