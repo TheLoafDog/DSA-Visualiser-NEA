@@ -1,7 +1,7 @@
-# Inheritance of Pages:                     Lines 331 - 470
-# dsa_frame class with filtering of DSAs:   Lines 224 - 330
-# search frame with linear search:          Lines 139 - 223
-# hash retrieval (hash function in dsa_hash.py): Lines 473 - 477
+# Inheritance of Pages:                     Lines 332 - 471
+# dsa_frame class with filtering of DSAs:   Lines 225 - 331
+# search frame with linear search:          Lines 140 - 224
+# hash retrieval (hash function in dsa_hash.py): Lines 474 - 478
 
 # basic python import modules
 from customtkinter import *
@@ -21,6 +21,7 @@ import searching_vis
 import queue_vis
 import linked_list_vis
 import tree_vis
+import hash_table_vis
 
 # this is the header class for the main page
 class header(CTkFrame):
@@ -477,7 +478,7 @@ def hashDataRetrieve(key):
 database=open("DSA Types Database.txt", "r", encoding="utf-8")
 database_list = database.readlines()
 
-DSAs_array = ['Array', 'Queue', 'Stack', 'Graph', 'Tree', 'Linked List', 'Sorting', 'Searching']
+DSAs_array = ['Array', 'Queue', 'Stack', 'Graph', 'Tree', 'Linked List', 'Sorting', 'Searching', 'Hash Table']
 DSAs_dict = {
     'Array': array_vis,
     'Queue': queue_vis,
@@ -486,10 +487,11 @@ DSAs_dict = {
     'Tree': tree_vis,
     'Linked List': linked_list_vis,
     'Sorting': sorting_vis,
-    'Searching': searching_vis
+    'Searching': searching_vis,
+    'Hash Table': hash_table_vis
     }
 types = ["Normal", "Queue", "Stack", "Static", "Dynamic", "Priority", "Circular", "Binary", "Bubble", "Insertion", "Merge", "Linear", "Binary"]
-categories = ["Static", "Linear Data Structures", "Dynamic", "Queue", "Non-Linear Data Structures", "DFS", "BFS", "Pre-order", "In-order", "Post-order", "Sorting", "Searching"]
+categories = ["Static", "Linear Data Structures", "Dynamic", "Queue", "Non-Linear Data Structures", "DFS", "BFS", "Pre-order", "In-order", "Post-order", "Sorting", "Searching", "Hashing"]
 
 if __name__ == "__main__":
     app = App()

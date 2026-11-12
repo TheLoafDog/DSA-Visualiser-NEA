@@ -60,3 +60,8 @@
 ## 2026-11-11 — Dijkstra's shortest path
 - New `dijkstra_steps.py` (pure: edges + start [+ target] → animation states, distances, previous map; `shortest_path`, `format_distances`). Graph visualiser gets a "Dijkstra" button (enabled with the Weighted Graph checkbox) using Start Node and optional Find: orange = node being settled, yellow = neighbour being relaxed, green = settled, purple = final path to the target; OUTPUT shows the distance table (∞ for unreachable).
 - Tests: `tests/test_dijkstra_steps.py` (textbook graph, path/early-stop, 25 random graphs checked against networkx) and `tests/test_graph_vis.py` (GUI, skipped without a display). Merged by Claude (autonomous run).
+
+## 2026-11-12 — hash table visualiser
+- New `hash_table_steps.py` (pure: `insert_steps` / `search_steps` with `key mod size` hashing and linear probing, `load_factor`) and `hash_table_vis.py` (`HashTableFrame` on `PlaybackFrame`: 10 slots drawn as boxes, Insert/Search/Generate Random/Clear, orange = slot examined, red = collision/mismatch, green = placed/found, purple = empty slot ending a failed search, load factor shown).
+- "Hash Table" added to `DSAs_array`/`DSAs_dict` and a "Hashing" filter category in `Main.py`; a Hash Table revision entry added to the generator script and the database regenerated (the generator now writes CRLF explicitly so the output is identical on every platform; only the new line changed).
+- Tests: `tests/test_hash_table_steps.py` and `tests/test_hash_table_vis.py` (GUI, skipped without a display). Quiz questions for it come with the next item. Merged by Claude (autonomous run).
