@@ -70,3 +70,6 @@
 - 39 questions added to `Quiz.question_pool` (12 quick/selection sort, 7 BST, 8 Dijkstra, 12 hash table; difficulties 1–3). "Hash Table" is now a quiz topic checkbox (`QuizPage.DSAs`) and in the test's known topics. Pool is now 124 questions.
 - Revision content: Sorting gains Selection Sort and Quick Sort Partitioning entries (types now list Quick and Selection), Tree gains BST Insert and Search, Graph gains Dijkstra's Algorithm; database regenerated (only those three lines changed).
 - Updated the line-number header comments in `Quiz.py`. Merged by Claude (autonomous run).
+
+## 2026-11-12 — roadmap extended (Phase 3)
+- All unattended Phase 1–2 items are done, so five new items were added: hash table delete (tombstones), BST delete, heap sort, Prim's MST, and deriving the menu filter lists from the database. Merged by Claude (autonomous run).
