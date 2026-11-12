@@ -103,6 +103,7 @@ graph = {
         ["Traversal Algorithms:", "Common traversal algorithms include Depth-First Search (DFS) and Breadth-First Search (BFS)."],
         ["Adjacency List vs Adjacency Matrix:", "Adjacency lists are memory efficient for sparse graphs, while adjacency matrices are used for dense graphs."],
         ["Shortest Path:", "Algorithms like Dijkstra’s and Bellman-Ford are used to find the shortest path between nodes in a weighted graph."],
+        ["Dijkstra's Algorithm:", "Finds the shortest path from a start node to every other node in a weighted graph with non-negative weights. Every node starts with distance infinity (0 for the start); on each step the unvisited node with the smallest distance is settled, and each of its neighbours' distances is updated if the route through the settled node is shorter. A priority queue makes choosing the next node efficient."],
         ["Graph Representation:", "Graphs can be represented in several ways, including adjacency matrices, adjacency lists, or edge lists, each having its pros and cons."],
         ["Cycle Detection:", "Graph algorithms are also used for detecting cycles in directed and undirected graphs, a key operation in many applications."],
         ["Degrees of Nodes:", "The degree of a node is the number of edges the node connects to."]
@@ -120,6 +121,7 @@ tree = {
         ["Tree:", "A tree is a hierarchical data structure with a root node and subtrees."],
         ["Binary Tree:", "A binary tree is a tree where each node has at most two children."],
         ["Binary Search Tree (BST):", "A binary search tree is a binary tree with the left child less than the parent node and the right child greater."],
+        ["BST Insert and Search:", "To search a BST, start at the root and go left if the value is smaller or right if it is larger, until the value is found or an empty position is reached (not found). Insert follows the same path and adds the value as a new leaf. Both take O(log n) on a balanced tree but O(n) on a chain-shaped (degenerate) tree."],
         ["Balanced Tree:", "A balanced tree ensures that the height difference between subtrees of any node is minimal, helping improve search times."],
         ["Applications:", "Trees are used in database indexing, file systems, and decision-making algorithms."],
         ["Traversal Techniques:", "Common tree traversal techniques include pre-order, in-order, and post-order traversals."],
@@ -132,7 +134,7 @@ sorting = {
     'id': 'sorting',
     'name': 'Sorting',
     'categories': ['Sorting and Searching Algorithms'],
-    'types': ['Bubble', 'Insertion', 'Merge'],
+    'types': ['Bubble', 'Insertion', 'Merge', 'Quick', 'Selection'],
     'description': 'A sorting algorithm arranges elements in a specified order, such as ascending or descending.',
     'content': [
         ["Sorting:", "Sorting is the process of arranging elements in a particular order, typically ascending or descending."],
@@ -140,6 +142,8 @@ sorting = {
         ["Merge Sort:", "A divide-and-conquer sorting algorithm with time complexity O(n log n), which splits the array into smaller parts and merges them in order."],
         ["Quick Sort:", "Another divide-and-conquer algorithm that partitions the array and recursively sorts subarrays, with an average time complexity of O(n log n)."],
         ["Insertion Sort:", "A simple algorithm where elements are picked one by one and inserted into their correct position within the sorted part of the array."],
+        ["Selection Sort:", "Repeatedly finds the smallest element in the unsorted part of the array and swaps it into the next position of the sorted part. It always makes n(n-1)/2 comparisons, so it is O(n^2) in every case, but it makes at most n-1 swaps."],
+        ["Quick Sort Partitioning:", "Each partition step chooses a pivot (the visualiser uses the last element), moves everything smaller than or equal to the pivot to its left and everything larger to its right, and places the pivot in its final position. Choosing a poor pivot, such as the last element of an already sorted array, gives the O(n^2) worst case."],
         ["Time Complexity:", "Common time complexities for sorting algorithms include O(n^2) for bubble sort and O(n log n) for merge and quicksort."],
         ["Stability:", "A stable sorting algorithm preserves the relative order of records with equal keys, while an unstable sort does not."],
         ["Space Complexity:", "Merge sort has O(n) auxiliary space complexity, while algorithms like quicksort are considered in-place with O(log n) space complexity."]

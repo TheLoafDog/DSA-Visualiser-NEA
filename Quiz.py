@@ -1,8 +1,8 @@
 # Priority Queue:   328 - 385
 
 # Question class:   12 - 18
-# Timer class:      125 - 156
-# Quiz Page class:  159 - 471
+# Timer class:      168 - 199
+# Quiz Page class:  201 - 514
 
 
 import customtkinter as ctk
@@ -119,6 +119,49 @@ question_pool = [
     Question("What is the worst-case time complexity of searching an unbalanced binary search tree with n nodes?", 3, ["Tree"], ["O(n)", "O(log n)", "O(1)", "O(n log n)"], "O(n)"),
     Question("What is the maximum number of nodes in a binary tree of height h (root at height 0)?", 3, ["Tree"], ["2^(h+1) - 1", "2h", "h^2", "2^h"], "2^(h+1) - 1"),
     Question("Inserting the values 5, 3, 8, 1 in that order into an empty binary search tree gives which root?", 3, ["Tree"], ["5", "1", "3", "8"], "5"),
+    # Quick sort and selection sort
+    Question("In quick sort, what is the element that the rest of the list is partitioned around called?", 1, ["Sorting"], ["The pivot", "The key", "The root", "The median"], "The pivot"),
+    Question("What is the average-case time complexity of quick sort?", 1, ["Sorting"], ["O(n log n)", "O(n^2)", "O(n)", "O(log n)"], "O(n log n)"),
+    Question("After one partition step of quick sort, where is the pivot?", 2, ["Sorting"], ["In its final sorted position", "At the start of the list", "At the end of the list", "In the middle of the list"], "In its final sorted position"),
+    Question("What is the worst-case time complexity of quick sort?", 2, ["Sorting"], ["O(n^2)", "O(n log n)", "O(n)", "O(log n)"], "O(n^2)"),
+    Question("Choosing the last element as the pivot, which input gives quick sort its worst case?", 3, ["Sorting"], ["An already sorted list", "A list of random values", "A list with two elements", "A list of equal-length strings"], "An already sorted list"),
+    Question("Quick sort partitions [4, 9, 1, 7, 3] with pivot 3 (the last element). Which elements end up to the left of the pivot?", 3, ["Sorting"], ["1", "4 and 1", "4, 9 and 7", "None of them"], "1"),
+    Question("What does each pass of selection sort do?", 1, ["Sorting"], ["Finds the smallest unsorted element and swaps it into place", "Swaps every adjacent pair that is out of order", "Splits the list in half", "Inserts the next element into the sorted part"], "Finds the smallest unsorted element and swaps it into place"),
+    Question("How many swaps does selection sort make at most on a list of n elements?", 2, ["Sorting"], ["n - 1", "n^2", "n log n", "1"], "n - 1"),
+    Question("What is the time complexity of selection sort on an already sorted list?", 2, ["Sorting"], ["O(n^2)", "O(n)", "O(log n)", "O(n log n)"], "O(n^2)"),
+    Question("After the first pass of selection sort on [5, 2, 9, 1, 7], what is the list?", 2, ["Sorting"], ["[1, 2, 9, 5, 7]", "[2, 5, 1, 7, 9]", "[1, 5, 2, 9, 7]", "[2, 5, 9, 1, 7]"], "[1, 2, 9, 5, 7]"),
+    Question("How many comparisons does selection sort make on a list of n elements, regardless of its order?", 3, ["Sorting"], ["n(n-1)/2", "n", "n log n", "n^2"], "n(n-1)/2"),
+    Question("Why is selection sort not a stable sort?", 3, ["Sorting"], ["A swap can move an element past an equal element", "It uses extra memory", "It only works on numbers", "It always compares adjacent elements"], "A swap can move an element past an equal element"),
+    # Binary search tree
+    Question("In a binary search tree, where are values larger than a node stored?", 1, ["Tree"], ["In its right subtree", "In its left subtree", "In its parent", "Anywhere below it"], "In its right subtree"),
+    Question("Inserting into a binary search tree always adds the new value where?", 2, ["Tree"], ["As a new leaf", "As the new root", "In the middle of the tree", "In place of the smallest node"], "As a new leaf"),
+    Question("What is the time complexity of searching a balanced binary search tree with n nodes?", 2, ["Tree"], ["O(log n)", "O(n)", "O(1)", "O(n^2)"], "O(log n)"),
+    Question("When searching a binary search tree for a value, what does reaching an empty position mean?", 2, ["Tree"], ["The value is not in the tree", "The value is at the root", "The tree is full", "The search must restart"], "The value is not in the tree"),
+    Question("Inserting 8, 3, 10, 1, 6 in that order into an empty binary search tree, which node is the parent of 6?", 3, ["Tree"], ["3", "8", "10", "1"], "3"),
+    Question("Inserting the values 1, 2, 3, 4, 5 in that order into an empty binary search tree produces what shape?", 3, ["Tree"], ["A chain with every node having only a right child", "A perfectly balanced tree", "A chain with every node having only a left child", "A tree of height 2"], "A chain with every node having only a right child"),
+    Question("How many comparisons are needed to find 6 in the binary search tree built from 8, 3, 10, 1, 6 (inserted in that order)?", 3, ["Tree"], ["3", "1", "2", "5"], "3"),
+    # Dijkstra's algorithm
+    Question("What does Dijkstra's algorithm find?", 1, ["Graph"], ["The shortest path from a start node to the other nodes", "A minimum spanning tree", "Whether a graph has a cycle", "The node with the most edges"], "The shortest path from a start node to the other nodes"),
+    Question("At the start of Dijkstra's algorithm, what distance is given to every node except the start node?", 1, ["Graph"], ["Infinity", "0", "1", "The number of edges"], "Infinity"),
+    Question("Which node does Dijkstra's algorithm settle (visit) next on each step?", 2, ["Graph"], ["The unvisited node with the smallest known distance", "The node with the fewest edges", "The node added most recently", "The node with the largest known distance"], "The unvisited node with the smallest known distance"),
+    Question("What does Dijkstra's algorithm do when it finds a shorter route to a neighbouring node?", 2, ["Graph"], ["Updates that node's distance and previous node", "Removes the edge it came from", "Marks the node as visited", "Restarts from the start node"], "Updates that node's distance and previous node"),
+    Question("Which kind of graph can Dijkstra's algorithm give wrong answers on?", 2, ["Graph"], ["One with negative edge weights", "One with a cycle", "One with more than 10 nodes", "An undirected graph"], "One with negative edge weights"),
+    Question("Edges A-B weight 1, B-C weight 1, A-C weight 5. What is the shortest distance from A to C found by Dijkstra's algorithm?", 3, ["Graph"], ["2", "5", "1", "6"], "2"),
+    Question("Once Dijkstra's algorithm has settled a node, why is its distance final?", 3, ["Graph"], ["Every other unsettled node is at least as far away and all weights are non-negative", "The node has no more neighbours", "The algorithm only visits each edge once", "It is stored in a stack"], "Every other unsettled node is at least as far away and all weights are non-negative"),
+    Question("Which data structure makes choosing the next node in Dijkstra's algorithm efficient?", 3, ["Graph"], ["A priority queue", "A stack", "A linked list", "A hash table"], "A priority queue"),
+    # Hash table
+    Question("What does a hash function do in a hash table?", 1, ["Hash Table"], ["Turns a key into an index in the table", "Sorts the keys", "Counts the number of keys", "Links each key to the next one"], "Turns a key into an index in the table"),
+    Question("What is the average time complexity of searching a hash table?", 1, ["Hash Table"], ["O(1)", "O(n)", "O(log n)", "O(n^2)"], "O(1)"),
+    Question("With the hash function key mod 10, which index does the key 47 hash to?", 1, ["Hash Table"], ["7", "4", "47", "10"], "7"),
+    Question("What is a collision in a hash table?", 2, ["Hash Table"], ["Two different keys hash to the same index", "A key is inserted twice", "The table runs out of space", "The hash function returns a negative number"], "Two different keys hash to the same index"),
+    Question("With linear probing, what happens when the home slot of a key is already occupied?", 2, ["Hash Table"], ["The next slot is checked, wrapping round to the start", "The key is rejected", "The existing key is overwritten", "The key is stored in a linked list at that slot"], "The next slot is checked, wrapping round to the start"),
+    Question("Using key mod 10 and linear probing, 13 and 23 are inserted into an empty table, then 33. Which index does 33 go to?", 2, ["Hash Table"], ["5", "3", "4", "0"], "5"),
+    Question("When does a linear probing search conclude that a key is not in the table?", 2, ["Hash Table"], ["When it reaches an empty slot", "When it reaches the home slot", "After one comparison", "When it finds a larger key"], "When it reaches an empty slot"),
+    Question("What is the load factor of a hash table?", 2, ["Hash Table"], ["Number of stored items divided by the table size", "Table size divided by number of stored items", "Number of collisions", "The largest key stored"], "Number of stored items divided by the table size"),
+    Question("What is the worst-case time complexity of a search in a hash table using linear probing?", 3, ["Hash Table"], ["O(n)", "O(1)", "O(log n)", "O(n log n)"], "O(n)"),
+    Question("What is primary clustering?", 3, ["Hash Table"], ["Runs of occupied slots that grow as linear probing places keys next to each other", "Storing all keys in the first slot", "Grouping keys by their size", "A hash function that returns the same index for every key"], "Runs of occupied slots that grow as linear probing places keys next to each other"),
+    Question("Why must every item be reinserted when a hash table is resized?", 3, ["Hash Table"], ["Each key's index depends on the table size", "The items are stored in sorted order", "The old table is deleted first", "Resizing changes the keys"], "Each key's index depends on the table size"),
+    Question("Which collision resolution method stores all the keys that hash to one index in a linked list at that slot?", 3, ["Hash Table"], ["Chaining", "Linear probing", "Rehashing", "Double hashing"], "Chaining"),
 ]
 
 # Making a frame that hold the timer
@@ -161,7 +204,7 @@ class QuizPage(ctk.CTkFrame):
         self.root = root
 
         self.pack_propagate(False)  # Prevent resizing to fit content 
-        self.DSAs = ['Array', 'Queue', 'Stack', 'Graph', 'Tree', 'Linked List', 'Sorting', 'Searching']
+        self.DSAs = ['Array', 'Queue', 'Stack', 'Graph', 'Tree', 'Linked List', 'Sorting', 'Searching', 'Hash Table']
 
         if DSA:
             self.current_DSA = DSA
