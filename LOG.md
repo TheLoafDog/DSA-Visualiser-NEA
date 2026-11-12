@@ -65,3 +65,8 @@
 - New `hash_table_steps.py` (pure: `insert_steps` / `search_steps` with `key mod size` hashing and linear probing, `load_factor`) and `hash_table_vis.py` (`HashTableFrame` on `PlaybackFrame`: 10 slots drawn as boxes, Insert/Search/Generate Random/Clear, orange = slot examined, red = collision/mismatch, green = placed/found, purple = empty slot ending a failed search, load factor shown).
 - "Hash Table" added to `DSAs_array`/`DSAs_dict` and a "Hashing" filter category in `Main.py`; a Hash Table revision entry added to the generator script and the database regenerated (the generator now writes CRLF explicitly so the output is identical on every platform; only the new line changed).
 - Tests: `tests/test_hash_table_steps.py` and `tests/test_hash_table_vis.py` (GUI, skipped without a display). Quiz questions for it come with the next item. Merged by Claude (autonomous run).
+
+## 2026-11-12 — quiz questions and revision content for the new algorithms
+- 39 questions added to `Quiz.question_pool` (12 quick/selection sort, 7 BST, 8 Dijkstra, 12 hash table; difficulties 1–3). "Hash Table" is now a quiz topic checkbox (`QuizPage.DSAs`) and in the test's known topics. Pool is now 124 questions.
+- Revision content: Sorting gains Selection Sort and Quick Sort Partitioning entries (types now list Quick and Selection), Tree gains BST Insert and Search, Graph gains Dijkstra's Algorithm; database regenerated (only those three lines changed).
+- Updated the line-number header comments in `Quiz.py`. Merged by Claude (autonomous run).

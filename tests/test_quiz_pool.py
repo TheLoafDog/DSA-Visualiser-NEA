@@ -5,7 +5,7 @@ import Quiz
 
 # Topic names the quiz checkboxes use (kept in sync with Main.DSAs_array;
 # listed here so this test doesn't need tkinter to import Main).
-KNOWN_TOPICS = ['Array', 'Queue', 'Stack', 'Graph', 'Tree', 'Linked List', 'Sorting', 'Searching']
+KNOWN_TOPICS = ['Array', 'Queue', 'Stack', 'Graph', 'Tree', 'Linked List', 'Sorting', 'Searching', 'Hash Table']
 
 POOL = Quiz.question_pool
 IDS = [f"q{i}" for i in range(len(POOL))]

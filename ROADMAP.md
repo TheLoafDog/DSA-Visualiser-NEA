@@ -21,4 +21,4 @@ Up to 4 items per Claude session, top to bottom. Items tagged [needs Brandon] ar
 - [x] Add a binary search tree mode (insert/search with comparisons highlighted) to the binary tree visualiser.
 - [x] Add Dijkstra's shortest path to the graph visualiser (weighted graphs), with an output of distances.
 - [x] Add a hash table visualiser (insert/search with linear probing), plus its revision-database entry and menu wiring.
-- [ ] Add quiz questions and revision content for the new algorithms above (quick/selection sort, BST, Dijkstra, hash table).
+- [x] Add quiz questions and revision content for the new algorithms above (quick/selection sort, BST, Dijkstra, hash table).
