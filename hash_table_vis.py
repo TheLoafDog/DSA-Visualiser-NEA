@@ -1,9 +1,9 @@
-# Hash table frame (inherits the shared playback base class in playback_frame.py):  Lines 17 - 139
-# Control frame (speed slider):   Lines 141 - 154
-# Message frame:                  Lines 156 - 171
-# main():                         Lines 173 - 195
+# Hash table frame (inherits the shared playback base class in playback_frame.py):  Lines 18 - 152
+# Control frame (speed slider):   Lines 154 - 164
+# Message frame:                  Lines 167 - 181
+# main():                         Lines 184 - 202
 
-# Insert / search steps:  hash_table_steps.insert_steps / search_steps
+# Insert / search / delete steps:  hash_table_steps.insert_steps / search_steps / delete_steps
 
 import random
 import customtkinter as ctk
@@ -35,6 +35,9 @@ class HashTableFrame(PlaybackFrame):
 
         self.search_button = ctk.CTkButton(master=self.controls, text="Search", width=80, command=lambda: self.start_operation("search"))
         self.search_button.pack(side="left", padx=5)
+
+        self.delete_button = ctk.CTkButton(master=self.controls, text="Delete", width=80, command=lambda: self.start_operation("delete"))
+        self.delete_button.pack(side="left", padx=5)
 
         self.generate_button = ctk.CTkButton(master=self.controls, text="Generate Random", width=130, command=self.generate_random_table)
         self.generate_button.pack(side="left", padx=5)
@@ -74,15 +77,27 @@ class HashTableFrame(PlaybackFrame):
         for i, key in enumerate(table):
             x0 = offset + i * slot_width + (slot_width - box) / 2
             x1 = x0 + box
-            fill = colours[i] if colours[i] != hash_table_steps.EMPTY else ("white" if key is None else "lightgrey")
+            if colours[i] != hash_table_steps.EMPTY:
+                fill = colours[i]
+            elif key is None:
+                fill = "white"
+            elif key is hash_table_steps.DELETED:
+                fill = "dimgray"
+            else:
+                fill = "lightgrey"
             self.canvas.create_rectangle(x0, top, x1, top + box, fill=fill, outline="black", width=2)
             if key is not None:
-                self.canvas.create_text((x0 + x1) / 2, top + box / 2, text=str(key), fill="black", font=("Arial", 14, "bold"))
+                text_colour = "white" if fill in ("black", "dimgray") else "black"
+                self.canvas.create_text((x0 + x1) / 2, top + box / 2, text=str(key), fill=text_colour, font=("Arial", 14, "bold"))
             self.canvas.create_text((x0 + x1) / 2, top + box + 14, text=str(i), fill="black", font=("Arial", 10))
 
         self.canvas.create_text(300, 60, text=f"hash(key) = key mod {len(table)}", fill="black", font=("Arial", 14))
         used = sum(1 for slot in table if slot is not None)
-        self.canvas.create_text(300, 250, text=f"Load factor: {used}/{len(table)} = {hash_table_steps.load_factor(table):.2f}", fill="black", font=("Arial", 12))
+        deleted = sum(1 for slot in table if slot is hash_table_steps.DELETED)
+        text = f"Load factor: {used}/{len(table)} = {hash_table_steps.load_factor(table):.2f}"
+        if deleted:
+            text += f"   (includes {deleted} deleted marker{'s' if deleted != 1 else ''}, X)"
+        self.canvas.create_text(300, 250, text=text, fill="black", font=("Arial", 12))
         self.update_idletasks()
 
     # --- actions --------------------------------------------------------------
@@ -109,6 +124,8 @@ class HashTableFrame(PlaybackFrame):
 
         if operation == "insert":
             steps = hash_table_steps.insert_steps(self.table, key) # Modifies self.table
+        elif operation == "delete":
+            steps = hash_table_steps.delete_steps(self.table, key) # Leaves a tombstone in self.table
         else:
             steps = hash_table_steps.search_steps(self.table, key)
 
@@ -181,5 +198,5 @@ def main(master, window):
     table_frame = HashTableFrame(master=master, speed_var=control_frame.speed_var, message_box=message_box)
     table_frame.grid(row=0, column=0, padx=20, pady=10)
 
-    message_box.change_message(f"Type a key (0-{MAX_KEY}) then Insert or Search. hash(key) = key mod {TABLE_SIZE}; collisions are resolved by linear probing.")
+    message_box.change_message(f"Type a key (0-{MAX_KEY}) then Insert, Search or Delete. hash(key) = key mod {TABLE_SIZE}; collisions are resolved by linear probing.")
     return table_frame

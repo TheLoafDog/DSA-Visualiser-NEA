@@ -12,7 +12,7 @@ def check_states(states, size):
         assert len(table) == size
         assert len(colours) == size
         assert isinstance(text, str) and text
-        assert all(c in (hts.EMPTY, hts.EXAMINE, hts.COLLISION, hts.FOUND, hts.NOT_FOUND) for c in colours)
+        assert all(c in (hts.EMPTY, hts.EXAMINE, hts.COLLISION, hts.FOUND, hts.NOT_FOUND, hts.TOMBSTONE) for c in colours)
 
 
 def test_hash_index_is_key_mod_size():
@@ -132,3 +132,97 @@ def test_random_inserts_then_every_key_is_found(seed):
     # a key that was never inserted is never "found"
     missing = next(k for k in range(100, 200) if k not in keys)
     assert hts.FOUND not in hts.search_steps(table, missing)[-1][1]
+
+
+# --- delete (tombstones) ------------------------------------------------------
+
+def test_delete_leaves_a_tombstone():
+    table = [None] * 10
+    hts.insert_steps(table, 3)
+    states = hts.delete_steps(table, 3)
+    check_states(states, 10)
+    assert table[3] is hts.DELETED
+    assert states[-1][1][3] == hts.TOMBSTONE
+    assert "deleted marker" in states[-1][2]
+    assert str(hts.DELETED) == "X"
+
+
+def test_delete_missing_key_changes_nothing():
+    table = [None] * 10
+    hts.insert_steps(table, 3)
+    before = list(table)
+    states = hts.delete_steps(table, 13)  # home slot 3 holds 3, slot 4 empty
+    assert table == before
+    assert states[-1][1][4] == hts.NOT_FOUND
+    assert "Nothing to delete" in states[-1][2]
+
+
+def test_search_probes_past_a_tombstone():
+    table = [None] * 10
+    for key in (3, 13, 23):
+        hts.insert_steps(table, key)      # slots 3, 4, 5
+    hts.delete_steps(table, 13)           # slot 4 becomes a tombstone
+    states = hts.search_steps(table, 23)
+    check_states(states, 10)
+    assert states[-1][1][4] == hts.TOMBSTONE
+    assert states[-1][1][5] == hts.FOUND
+    assert "Found 23 at index 5" in states[-1][2]
+    # and the deleted key itself is no longer found
+    assert hts.FOUND not in hts.search_steps(table, 13)[-1][1]
+
+
+def test_insert_reuses_the_first_tombstone_but_checks_for_duplicates_first():
+    table = [None] * 10
+    for key in (3, 13, 23):
+        hts.insert_steps(table, key)      # slots 3, 4, 5
+    hts.delete_steps(table, 13)           # tombstone at 4
+    # 23 is still in the table past the tombstone: no duplicate is added
+    states = hts.insert_steps(table, 23)
+    assert table[4] is hts.DELETED and table[5] == 23
+    assert "already in the table" in states[-1][2]
+    # a new key that probes past the tombstone is placed into it
+    states = hts.insert_steps(table, 33)
+    assert table[4] == 33
+    assert states[-1][1][4] == hts.FOUND
+    assert "deleted slot" in states[-1][2]
+
+
+def test_insert_into_table_full_of_keys_and_tombstones_reuses_tombstone():
+    table = [None] * 3
+    for key in (0, 1, 2):
+        hts.insert_steps(table, key)
+    hts.delete_steps(table, 1)
+    states = hts.insert_steps(table, 7)   # home 1 is the tombstone; 2 and 0 are keys
+    assert table[1] == 7
+    assert "deleted slot" in states[-1][2]
+
+
+def test_is_key_and_load_factor_with_tombstones():
+    table = [None] * 4
+    hts.insert_steps(table, 1)
+    hts.insert_steps(table, 2)
+    hts.delete_steps(table, 1)
+    assert [hts.is_key(s) for s in table] == [False, False, True, False]
+    assert hts.load_factor(table) == pytest.approx(0.5)  # tombstone still counts
+
+
+@pytest.mark.parametrize("seed", range(20))
+def test_random_insert_delete_mix_matches_a_set(seed):
+    rng = random.Random(seed)
+    size = rng.randint(4, 12)
+    table = [None] * size
+    live = set()
+    for _ in range(40):
+        key = rng.randrange(50)
+        if rng.random() < 0.6 and len(live) < size:
+            hts.insert_steps(table, key)
+            live.add(key)
+        else:
+            hts.delete_steps(table, key)
+            live.discard(key)
+        assert sorted(k for k in table if hts.is_key(k)) == sorted(live)
+        for k in live:
+            assert hts.FOUND in hts.search_steps(table, k)[-1][1]
+        absent = rng.randrange(50)
+        if absent not in live:
+            assert hts.FOUND not in hts.search_steps(table, absent)[-1][1]
