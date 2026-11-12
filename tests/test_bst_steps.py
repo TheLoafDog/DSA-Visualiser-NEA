@@ -138,3 +138,112 @@ def test_random_bst_uses_distinct_values_in_range():
         assert all(1 <= v <= 99 for v in tree.inorder())
         assert len(set(tree.inorder())) == len(tree)
     assert len(bst_steps.random_bst(3, rng=rng)) == 3
+
+
+# ---- deletion ---------------------------------------------------------------
+
+def check_states_have_snapshots(states, tree):
+    assert states
+    for state in states:
+        assert len(state) == 4
+        colours, message, output, snapshot = state
+        assert set(colours) == set(snapshot["nodes"]), "every drawn node needs a colour"
+        assert set(snapshot["pos"]) == set(snapshot["nodes"])
+        assert isinstance(message, str) and message
+    assert states[-1][3] == tree.snapshot()
+
+
+def test_delete_leaf():
+    tree = BST([50, 30, 70, 20])
+    states = tree.delete_steps(20)
+    check_states_have_snapshots(states, tree)
+    assert 20 not in tree
+    assert tree.left[30] is None
+    assert tree.inorder() == [30, 50, 70]
+    assert "leaf" in states[-2][1]
+    assert states[-2][0][20] == 'red'
+    assert 20 in states[-2][3]["nodes"] and 20 not in states[-1][3]["nodes"]
+    check_bst_property(tree)
+
+
+def test_delete_node_with_one_child():
+    tree = BST([50, 30, 70, 20, 25])  # 30 has only a left child (20), 20 has a right child (25)
+    states = tree.delete_steps(30)
+    check_states_have_snapshots(states, tree)
+    assert tree.left[50] == 20 and tree.parent[20] == 50
+    assert tree.right[20] == 25
+    assert tree.inorder() == [20, 25, 50, 70]
+    assert "one child" in states[-2][1]
+    assert states[-2][0][30] == 'red' and states[-2][0][20] == 'green'
+    check_bst_property(tree)
+
+
+def test_delete_node_with_two_children_uses_inorder_successor():
+    tree = BST([50, 30, 70, 20, 40, 60, 80, 65])
+    states = tree.delete_steps(50)
+    check_states_have_snapshots(states, tree)
+    # successor of 50 is 60 (smallest in the right subtree); 60's node is removed and 65 moves up
+    assert tree.root == 60
+    assert tree.parent[60] is None
+    assert tree.left[60] == 30 and tree.right[60] == 70
+    assert tree.left[70] == 65 and tree.parent[65] == 70
+    assert tree.inorder() == [20, 30, 40, 60, 65, 70, 80]
+    assert any("in-order successor" in st[1] for st in states)
+    assert any(st[0].get(60) == 'yellow' and st[0].get(50) == 'red' for st in states)
+    assert states[-1][0][60] == 'yellow'
+    check_bst_property(tree)
+
+
+def test_delete_root_whose_successor_is_its_right_child():
+    tree = BST([50, 30, 70, 80])
+    tree.delete_steps(50)
+    assert tree.root == 70
+    assert tree.left[70] == 30 and tree.right[70] == 80
+    assert tree.parent[80] == 70
+    check_bst_property(tree)
+
+
+def test_delete_absent_value_changes_nothing_and_ends_red():
+    tree = BST([50, 30, 70])
+    before = tree.snapshot()
+    states = tree.delete_steps(60)
+    assert tree.snapshot() == before
+    assert all(len(st) == 4 and st[3] == before for st in states)
+    assert states[-1][0][70] == 'red'
+    assert "NOT in the tree" in states[-1][1]
+
+
+def test_delete_last_node_empties_the_tree():
+    tree = BST([7])
+    states = tree.delete_steps(7)
+    assert tree.root is None and len(tree) == 0
+    assert states[-1][3] == {"nodes": [], "edges": [], "pos": {}}
+    assert tree.delete_steps(7)[-1][1].startswith("The tree is empty")
+
+
+def test_delete_helper_and_search_path():
+    tree = BST([50, 30, 70])
+    assert tree.search_path(70) == [50, 70]
+    assert tree.search_path(60) == [50, 70]
+    assert tree.delete(30) is True
+    assert tree.delete(30) is False
+    assert tree.inorder() == [50, 70]
+
+
+@pytest.mark.parametrize("seed", range(25))
+def test_random_deletions_keep_bst_property(seed):
+    rng = random.Random(seed)
+    values = rng.sample(range(1, 100), rng.randint(1, 15))
+    tree = BST(values)
+    remaining = sorted(values)
+    while remaining:
+        victim = rng.choice(remaining)
+        states = tree.delete_steps(victim)
+        check_states_have_snapshots(states, tree)
+        remaining.remove(victim)
+        assert tree.inorder() == remaining
+        assert len(tree) == len(remaining)
+        check_bst_property(tree)
+        for v in remaining:
+            assert tree.search_steps(v)[-1][0][v] == 'green'
+        assert tree.layout().keys() == set(remaining)

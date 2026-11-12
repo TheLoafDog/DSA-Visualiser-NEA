@@ -77,3 +77,8 @@
 ## 2026-11-12 — hash table delete (tombstones)
 - `hash_table_steps.delete_steps` replaces the found key with a `DELETED` tombstone (drawn as a black "X"); search and delete now probe past tombstones, and insert remembers the first tombstone it passes, keeps probing to rule out a duplicate, then places the key in that tombstone. `is_key` helper added; the load factor counts tombstones and the visualiser says how many there are.
 - Delete button added to `HashTableFrame`. Tests: 7 new step tests (including a random insert/delete mix checked against a set) and a GUI test. Merged by Claude (autonomous run).
+
+## 2026-11-12 — BST delete
+- `bst_steps.BST.delete_steps` (plus `delete`, `search_path`, `snapshot`): the search is animated as before, then a leaf is removed, a node with one child is replaced by it (child green), or a node with two children is replaced by its in-order successor (walk to the right child then left-most, successor yellow, node red). Because the shape changes mid-animation each delete state carries a structure snapshot.
+- `graph_vis`: `run_animation` / `adjust_canvas` / `on_slider_move` now share one `show_state(index)` (behaviour unchanged); the BST tab overrides it to apply a state's snapshot, gets a "Value to Delete" entry + Delete button, and always starts a new animation from the current tree shape.
+- Tests: 8 new pure tests (all three cases, root/successor-is-right-child, absent value, emptying the tree, 25 random seeds checked for the BST property) and a GUI test of old-shape-then-new-shape playback. Merged by Claude (autonomous run).
