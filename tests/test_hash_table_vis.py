@@ -61,3 +61,18 @@ def test_generate_and_clear(vis):
     vis.clear_table()
     assert vis.table == [None] * hash_table_vis.TABLE_SIZE
     assert vis.playback_slider.cget("state") == "disabled"
+
+
+def test_delete_button_leaves_a_tombstone_drawn_as_x(vis):
+    import hash_table_steps
+
+    vis.value_entry.insert(0, "17")
+    vis.start_operation("insert")
+    vis.cancel_animation()
+    vis.start_operation("delete")
+    assert vis.table[7] is hash_table_steps.DELETED
+    assert "deleted marker" in vis.states[len(vis.states) - 1][2]
+    vis.cancel_animation()
+    labels = [vis.canvas.itemcget(i, "text") for i in vis.canvas.find_all() if vis.canvas.type(i) == "text"]
+    assert "X" in labels
+    assert any("deleted marker" in t for t in labels)

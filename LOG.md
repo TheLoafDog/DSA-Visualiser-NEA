@@ -73,3 +73,7 @@
 
 ## 2026-11-12 — roadmap extended (Phase 3)
 - All unattended Phase 1–2 items are done, so five new items were added: hash table delete (tombstones), BST delete, heap sort, Prim's MST, and deriving the menu filter lists from the database. Merged by Claude (autonomous run).
+
+## 2026-11-12 — hash table delete (tombstones)
+- `hash_table_steps.delete_steps` replaces the found key with a `DELETED` tombstone (drawn as a black "X"); search and delete now probe past tombstones, and insert remembers the first tombstone it passes, keeps probing to rule out a duplicate, then places the key in that tombstone. `is_key` helper added; the load factor counts tombstones and the visualiser says how many there are.
+- Delete button added to `HashTableFrame`. Tests: 7 new step tests (including a random insert/delete mix checked against a set) and a GUI test. Merged by Claude (autonomous run).
