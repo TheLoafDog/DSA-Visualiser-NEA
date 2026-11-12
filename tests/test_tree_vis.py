@@ -69,3 +69,42 @@ def test_random_tree_and_traversal(bst_tab):
     assert len(vis.states) == 7
     assert vis.states[6][2] == f"Visited: {sorted(vis.graph.nodes())}"
     vis.cancel_animation()
+
+
+def test_delete_animates_old_shape_then_new_shape(bst_tab):
+    vis = bst_tab
+    for value in (50, 30, 70, 60, 80):
+        vis.add_node(str(value))
+        vis.cancel_animation()
+
+    vis.delete_node("")
+    assert "enter the value" in vis.message_label.cget("text")
+    assert len(vis.bst) == 5
+
+    vis.delete_node("50")
+    assert vis.bst.root == 60
+    last = len(vis.states) - 1
+    # state 0 and the comparison states draw the old tree; the final state draws the new one
+    assert 50 in vis.states[0][3]["nodes"]
+    assert 50 in vis.states[1][3]["nodes"]
+    assert 50 not in vis.states[last][3]["nodes"]
+    vis.cancel_animation()
+
+    vis.show_state(1)
+    assert set(vis.graph.nodes()) == {50, 30, 70, 60, 80}
+    vis.show_state(last)
+    assert set(vis.graph.nodes()) == {30, 70, 60, 80}
+    assert {frozenset(e) for e in vis.graph.edges()} == {frozenset((60, 30)), frozenset((60, 70)), frozenset((70, 80))}
+
+    # a later insert starts from the current shape even if the slider was left on an old step
+    vis.show_state(1)
+    vis.add_node("65")
+    assert set(vis.states[0][0]) == {30, 70, 60, 80, 65}
+    vis.cancel_animation()
+
+    vis.delete_node("99")
+    assert "NOT in the tree" in vis.states[len(vis.states) - 1][1]
+    vis.cancel_animation()
+    vis.clear_graph()
+    vis.delete_node("5")
+    assert "nothing to delete" in vis.message_label.cget("text")

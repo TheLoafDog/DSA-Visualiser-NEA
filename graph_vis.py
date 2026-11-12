@@ -1,10 +1,10 @@
-# breadth-first-search (queue):     Lines 493 - 557
-# depth-first-search (recursive):   Lines 560 - 625
-# Dijkstra's shortest path:         Lines 627 - 667   (algorithm itself is pure, in dijkstra_steps.py)
+# breadth-first-search (queue):     Lines 490 - 554
+# depth-first-search (recursive):   Lines 557 - 622
+# Dijkstra's shortest path:         Lines 624 - 664   (algorithm itself is pure, in dijkstra_steps.py)
 
-# add_node:     Lines 400 - 427
-# delete_node:  Lines 429 - 453
-# add_edge:     Lines 455 - 474
+# add_node:     Lines 397 - 424
+# delete_node:  Lines 426 - 450
+# add_edge:     Lines 452 - 471
 
 import customtkinter as ctk
 import tkinter as tk # For boolean variable
@@ -284,21 +284,21 @@ class GraphVisualiser(ctk.CTkFrame):
         self.stop_button.configure(command=self.toggle_pause)
             
         # Next set the sort visualiser in relation to the slider value
-        node_colours = self.states[self.animation_index][0]
-        self.output_message(self.states[self.animation_index][1])
-        self.change_output(self.states[self.animation_index][2])
-        self.draw_graph(node_colours=node_colours)
+        self.show_state(self.animation_index)
 
+    def show_state(self, index):
+        # Draw one recorded step ([node_colours, message, output]) and show its messages
+        node_colours = self.states[index][0]
+        self.draw_graph(node_colours=node_colours)
+        self.output_message(self.states[index][1])
+        self.change_output(self.states[index][2])
 
     def run_animation(self):
         if not self.is_running:
             return
 
         if self.animation_index < len(self.states): # len(self.states) is the same as self.total_steps
-            node_colours = self.states[self.animation_index][0]
-            self.draw_graph(node_colours=node_colours)
-            self.output_message(self.states[self.animation_index][1])
-            self.change_output(self.states[self.animation_index][2])
+            self.show_state(self.animation_index)
             
             self.after_increment = self.after(int(self.speed_var.get()), lambda: self.increment_slider())
             self.after_id = self.after(int(self.speed_var.get()), lambda: self.run_animation())
@@ -343,10 +343,7 @@ class GraphVisualiser(ctk.CTkFrame):
             # In case the animation finished and the command changes, reset command for stop button
             self.stop_button.configure(command=self.toggle_pause)
             
-            node_colours = self.states[value][0]
-            self.draw_graph(node_colours=node_colours)
-            self.output_message(self.states[value][1])
-            self.change_output(self.states[value][2])
+            self.show_state(value)
             
             self.animation_index = value
             

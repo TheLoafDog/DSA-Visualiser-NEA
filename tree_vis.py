@@ -1,6 +1,6 @@
 # Basic Tree (inherited off Graph):                  Lines 26 - 480
 # Binary Tree (inherited off Basic Tree):            Lines 482 - 845
-# Binary Search Tree (inherited off Binary Tree):    Lines 848 - 1054
+# Binary Search Tree (inherited off Binary Tree):    Lines 848 - 1099
 #   (insert/search/traversal step logic is pure, in bst_steps.py)
 
 # BFS and DFS are inherited and are the same function used in Graph
@@ -904,6 +904,14 @@ class BinarySearchTreeVisualiser(BinaryTreeVisualiser):
         self.search_button = ctk.CTkButton(self.controls_frame, text="Search", command=lambda: self.search_value(self.find_node_entry.get()))
         self.search_button.grid(row=2, column=1, columnspan=2)
 
+        # Deleting values
+        ctk.CTkLabel(self.controls_frame, text="Value to Delete: (1-99)").grid(row=3, column=0)
+        self.delete_node_entry = ctk.CTkEntry(self.controls_frame, width=50)
+        self.delete_node_entry.grid(row=3, column=1, sticky="w")
+
+        self.delete_node_button = ctk.CTkButton(self.controls_frame, text="Delete", command=lambda: self.delete_node(self.delete_node_entry.get()))
+        self.delete_node_button.grid(row=3, column=1, columnspan=2)
+
         # Tree Traversals
         ctk.CTkLabel(self.controls_frame, text="Tree Traversals:").grid(row=4, column=0)
 
@@ -1006,10 +1014,39 @@ class BinarySearchTreeVisualiser(BinaryTreeVisualiser):
             return None
         return value
 
+    def show_state(self, index):
+        # Delete states carry a structure snapshot (the tree changes shape mid-animation)
+        state = self.states[index]
+        if len(state) > 3:
+            self.apply_snapshot(state[3])
+        super().show_state(index)
+
+    def cancel_animation(self):
+        # Show the tree as it is now (a cancelled delete animation may have drawn an older shape)
+        if self.after_id:
+            self.sync_graph()
+        super().cancel_animation()
+
+    def draw_graph(self, **kwargs):
+        # A snapshot drawn with colours recorded for another shape: default any missing node
+        node_colours = kwargs.get('node_colours', self.node_colours)
+        kwargs['node_colours'] = {node: node_colours.get(node, bst_steps.BASE_COLOUR) for node in self.graph.nodes()}
+        super().draw_graph(**kwargs)
+
+    def apply_snapshot(self, snapshot):
+        self.graph = nx.Graph()
+        self.graph.add_nodes_from(snapshot["nodes"])
+        self.graph.add_edges_from(snapshot["edges"])
+        self.pos = snapshot["pos"]
+
     def play_states(self, states):
         # Load [colours, message, output] states into the shared playback machinery and start
+        self.sync_graph() # states[0] must show the tree as it is now (the slider may have shown an older shape)
         self.reset_animation_variables()
         self.states[0] = [copy.deepcopy(self.node_colours), "", ""]
+        if states and len(states[0]) > 3: # Snapshot states: start from the shape the steps started from
+            snapshot = states[0][3]
+            self.states[0] = [{node: bst_steps.BASE_COLOUR for node in snapshot["nodes"]}, "", "", snapshot]
         for state in states:
             self.states[self.state_index] = state
             self.state_index += 1
@@ -1050,7 +1087,17 @@ class BinarySearchTreeVisualiser(BinaryTreeVisualiser):
         self.play_states(self.bst.traversal_steps(type))
 
     def delete_node(self, entry_value):
-        self.output_message("Deleting is not supported in BST mode; use Clear Tree.")
+        self.cancel_animation()
+        if len(self.bst) == 0:
+            self.output_message("The tree is empty, so there is nothing to delete.")
+            return
+        value = self.parse_value(entry_value) if entry_value.strip() else None
+        if value is None:
+            if entry_value.strip() == "":
+                self.output_message("Please enter the value to delete (1-99).")
+            return
+        states = self.bst.delete_steps(value)  # Changes the BST only if the value is present
+        self.play_states(states)
 
 
 def main(master, window):

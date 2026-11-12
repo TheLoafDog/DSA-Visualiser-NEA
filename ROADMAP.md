@@ -25,7 +25,7 @@ Up to 4 items per Claude session, top to bottom. Items tagged [needs Brandon] ar
 
 ## Phase 3 — More operations, algorithms and polish
 - [x] Add a Delete operation to the hash table visualiser (linear probing with tombstones so later probes still find keys), with pure steps in `hash_table_steps.py` and tests.
-- [ ] Add a Delete operation to the binary search tree mode (leaf, one child, two children via in-order successor) with the comparisons animated, pure logic in `bst_steps.py` and tests.
+- [x] Add a Delete operation to the binary search tree mode (leaf, one child, two children via in-order successor) with the comparisons animated, pure logic in `bst_steps.py` and tests.
 - [ ] Add heap sort to the sorting visualiser (build max-heap, then repeatedly swap the root to the end; colour the heap region), using the step-generation pattern, with tests.
 - [ ] Add Prim's minimum spanning tree to the graph visualiser (weighted graphs; animate the frontier edge chosen each step and show the total weight), with pure steps and tests against networkx.
 - [ ] Derive the main-menu filter "Types" and "Categories" checkbox lists from the revision database instead of the hard-coded lists in `Main.py` (removes the duplicate "Binary" entry and picks up Quick/Selection/Hashing), keeping the checkboxes inside the filter frame, with a test.
